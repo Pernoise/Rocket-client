@@ -14,28 +14,36 @@ public class Main extends Application {
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Regular.ttf"), 12);
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Bold.ttf"), 12);
 
-        BorderPane root = new BorderPane();
-        root.setStyle("-fx-background-color: #080404; -fx-font-family: 'JetBrains Mono';");
+        AccountManager accountManager   = new AccountManager();
+        SettingsManager settingsManager = new SettingsManager();
+        settingsManager.load();
 
-        root.setLeft(new LeftPanel());
-        root.setCenter(new CenterPanel());
-        root.setRight(new NewsPanel());
+        SplashScreen splash = new SplashScreen(() -> {
+            BorderPane root = new BorderPane();
+            root.setStyle("-fx-background-color: #080404; -fx-font-family: 'JetBrains Mono';");
 
-        Scene scene = new Scene(root, 900, 540);
-        stage.setTitle("Rocket Client");
-        stage.setScene(scene);
-        stage.setResizable(true);
-        stage.setMinWidth(900);
-        stage.setMinHeight(540);
+            root.setLeft(new LeftPanel(accountManager, settingsManager));
+            root.setCenter(new CenterPanel());
+            root.setRight(new NewsPanel());
 
-        try {
-            Image icon = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
-            stage.getIcons().add(icon);
-        } catch (Exception e) {
-            System.out.println("Could not load taskbar icon");
-        }
+            Scene scene = new Scene(root, 900, 540);
+            stage.setTitle("Rocket Client");
+            stage.setScene(scene);
+            stage.setResizable(true);
+            stage.setMinWidth(900);
+            stage.setMinHeight(540);
 
-        stage.show();
+            try {
+                Image icon = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
+                stage.getIcons().add(icon);
+            } catch (Exception e) {
+                System.out.println("Could not load taskbar icon");
+            }
+
+            stage.show();
+        });
+
+        splash.show();
     }
 
     public static void main(String[] args) {

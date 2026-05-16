@@ -15,7 +15,12 @@ public class NewsPanel extends VBox {
         Label title = new Label("NEWS");
         title.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
-        getChildren().addAll(title, newsCard("16/05/2026", "The creation of Rocket Client"));
+        getChildren().addAll(title,
+            newsCard("16/05/2026", "Rocket Client is born — Alpha v0.1 released."),
+            newsCard("16/05/2026", "Microsoft + Ely.by authentication added."),
+            newsCard("16/05/2026", "Linux AppImage support in progress."),
+            newsCard("Coming soon", "Settings panel — Java args, RAM allocation, Discord RPC.")
+        );
     }
 
     private VBox newsCard(String date, String text) {

@@ -2,39 +2,47 @@ package com.rocketclient;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import java.awt.Desktop;
-import java.net.URI;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class LeftPanel extends VBox {
 
-    public LeftPanel() {
+    private final AccountManager accountManager;
+    private final SettingsManager settingsManager;
+
+    public LeftPanel(AccountManager accountManager, SettingsManager settingsManager) {
+        this.accountManager  = accountManager;
+        this.settingsManager = settingsManager;
+
         setPrefWidth(56);
         setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 0 1 0 0;");
         setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(14, 0, 14, 0));
         setSpacing(6);
 
-        VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true, null);
-        VBox account  = createIcon("icons/user.png", "Account", false, null);
-        VBox store    = createIcon("icons/handbag-simple.png", "Store — Coming Soon", false, null);
-        VBox settings = createIcon("icons/gear.png", "Settings", false, null);
+        VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true,  null,  false, false);
+        VBox account  = createIcon("icons/user.png",          "Account",       false, null,  true,  false);
+        VBox store    = createIcon("icons/handbag-simple.png","Store — Coming Soon", false, null, false, false);
+        VBox settings = createIcon("icons/gear.png",          "Settings",      false, null,  false, true);
 
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        VBox discord = createIcon("icons/discord-logo.png", "Discord — Coming Soon", false, null);
-        VBox github  = createIcon("icons/github-logo.png", "GitHub", false, "https://github.com/Pernoise/Rocket-client");
-        VBox website = createIcon("icons/globe.png", "Website — Coming Soon", false, null);
+        VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
+        VBox github  = createIcon("icons/github-logo.png",  "GitHub",  false, "https://github.com/Pernoise/Rocket-client", false, false);
+        VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
 
         getChildren().addAll(logo, account, store, settings, spacer, discord, github, website);
     }
 
-    private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url) {
+    private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url, boolean isAuth, boolean isSettings) {
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
         box.setPrefSize(34, 34);
@@ -62,18 +70,63 @@ public class LeftPanel extends VBox {
             box.setOnMouseEntered(e -> box.setStyle("-fx-background-color: #222222; -fx-background-radius: 8;"));
             box.setOnMouseExited(e  -> box.setStyle("-fx-background-color: #161616; -fx-background-radius: 8;"));
 
-            if (url != null) {
-                box.setOnMouseClicked(e -> {
-                    try {
-                        Desktop.getDesktop().browse(new URI(url));
-                    } catch (Exception ex) {
-                        System.out.println("Could not open URL: " + url);
-                    }
-                });
-                box.setStyle("-fx-background-color: #161616; -fx-background-radius: 8; -fx-cursor: hand;");
+            if (isAuth) {
+                box.setOnMouseClicked(e -> openAuthPanel());
+            } else if (isSettings) {
+                box.setOnMouseClicked(e -> openSettingsPanel());
+            } else if (url != null) {
+                box.setOnMouseClicked(e -> BrowserUtil.open(url));
             }
         }
 
         return box;
+    }
+
+    private void openAuthPanel() {
+        Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initStyle(StageStyle.UNDECORATED);
+
+        AuthPanel authPanel = new AuthPanel(accountManager);
+
+        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
+        closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #555555; -fx-font-size: 14; -fx-cursor: hand; -fx-border-color: transparent;");
+        closeBtn.setOnAction(e -> popup.close());
+
+        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
+        topBar.setAlignment(Pos.CENTER_RIGHT);
+        topBar.setPadding(new Insets(8, 8, 0, 8));
+        topBar.setStyle("-fx-background-color: #0f0f0f;");
+
+        VBox root = new VBox(topBar, authPanel);
+        root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
+
+        Scene scene = new Scene(root);
+        popup.setScene(scene);
+        popup.showAndWait();
+    }
+
+    private void openSettingsPanel() {
+        Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.initStyle(StageStyle.UNDECORATED);
+
+        SettingsPanel settingsPanel = new SettingsPanel(settingsManager);
+
+        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
+        closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #555555; -fx-font-size: 14; -fx-cursor: hand; -fx-border-color: transparent;");
+        closeBtn.setOnAction(e -> popup.close());
+
+        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
+        topBar.setAlignment(Pos.CENTER_RIGHT);
+        topBar.setPadding(new Insets(8, 8, 0, 8));
+        topBar.setStyle("-fx-background-color: #0f0f0f;");
+
+        VBox root = new VBox(topBar, settingsPanel);
+        root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
+
+        Scene scene = new Scene(root);
+        popup.setScene(scene);
+        popup.showAndWait();
     }
 }
