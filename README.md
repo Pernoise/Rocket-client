@@ -12,3 +12,5 @@ RocketMC is a performance focused Minecraft experience built to be minimal, fast
 
 Join the community:
 https://discord.com/invite/urHfdFdsbh
+Website:
+https://rocketclient.rocketclient.abrdns.com/
