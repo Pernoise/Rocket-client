@@ -2,6 +2,7 @@ package com.rocketclient;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
 public class NewsPanel extends VBox {
@@ -15,12 +16,33 @@ public class NewsPanel extends VBox {
         Label title = new Label("NEWS");
         title.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
-        getChildren().addAll(title,
-            newsCard("16/05/2026", "Rocket Client is born — Alpha v0.1 released."),
-            newsCard("16/05/2026", "Microsoft + Ely.by authentication added."),
-            newsCard("16/05/2026", "Linux AppImage support in progress."),
-            newsCard("Coming soon", "Settings panel — Java args, RAM allocation, Discord RPC.")
+        VBox cards = new VBox(8);
+        cards.getChildren().addAll(
+            newsCard("18/05/2026", "Rocket Client is now open for BETA testing."),
+            newsCard("18/05/2026", "We want your feedback. Open a ticket on GitHub if you encounter any bugs."),
+            newsCard("17/05/2026", "Ely.by authentication fully working."),
+            newsCard("17/05/2026", "Microsoft login pending Mojang approval."),
+            newsCard("17/05/2026", "Discord RPC connected."),
+            newsCard("17/05/2026", "Fabric loader support added."),
+            newsCard("17/05/2026", "Forge 1.8.9 toggle added."),
+            newsCard("17/05/2026", "Settings panel live, Java args and RAM allocation."),
+            newsCard("17/05/2026", "Auto update checker added."),
+            newsCard("17/05/2026", "Splash screen on launch."),
+            newsCard("17/05/2026", "Account switcher with logout support."),
+            newsCard("17/05/2026", "Version selector 1.19 to 26.1.2."),
+            newsCard("17/05/2026", "Java path override in settings."),
+            newsCard("17/05/2026", "JetBrains Mono font throughout."),
+            newsCard("17/05/2026", "Linux AppImage packaging in progress.")
         );
+
+        ScrollPane scroll = new ScrollPane(cards);
+        scroll.setFitToWidth(true);
+        scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        VBox.setVgrow(scroll, javafx.scene.layout.Priority.ALWAYS);
+
+        getChildren().addAll(title, scroll);
     }
 
     private VBox newsCard(String date, String text) {

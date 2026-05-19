@@ -1,6 +1,7 @@
 package com.rocketclient;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
@@ -19,15 +20,17 @@ public class Main extends Application {
         settingsManager.load();
 
         SplashScreen splash = new SplashScreen(() -> {
+            DiscordRPC.start(settingsManager);
+
             BorderPane root = new BorderPane();
             root.setStyle("-fx-background-color: #080404; -fx-font-family: 'JetBrains Mono';");
 
             root.setLeft(new LeftPanel(accountManager, settingsManager));
-            root.setCenter(new CenterPanel());
+            root.setCenter(new CenterPanel(accountManager, settingsManager));
             root.setRight(new NewsPanel());
 
             Scene scene = new Scene(root, 900, 540);
-            stage.setTitle("Rocket Client");
+            stage.setTitle("Rocket Client — BETA");
             stage.setScene(scene);
             stage.setResizable(true);
             stage.setMinWidth(900);
@@ -40,7 +43,12 @@ public class Main extends Application {
                 System.out.println("Could not load taskbar icon");
             }
 
+            stage.setOnCloseRequest(e -> DiscordRPC.stop());
             stage.show();
+
+            if (FirstLaunchDialog.isFirstLaunch()) {
+                Platform.runLater(() -> FirstLaunchDialog.show());
+            }
         });
 
         splash.show();

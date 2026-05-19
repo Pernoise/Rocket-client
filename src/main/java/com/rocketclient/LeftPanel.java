@@ -36,10 +36,9 @@ public class LeftPanel extends VBox {
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
         VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
-        VBox github  = createIcon("icons/github-logo.png",  "GitHub",  false, "https://github.com/Pernoise/Rocket-client", false, false);
         VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
 
-        getChildren().addAll(logo, account, store, settings, spacer, discord, github, website);
+        getChildren().addAll(logo, account, store, settings, spacer, discord, website);
     }
 
     private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url, boolean isAuth, boolean isSettings) {
@@ -90,19 +89,34 @@ public class LeftPanel extends VBox {
         AuthPanel authPanel = new AuthPanel(accountManager);
 
         javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
-        closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #555555; -fx-font-size: 14; -fx-cursor: hand; -fx-border-color: transparent;");
+        closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        );
+        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #888888; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        ));
+        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        ));
         closeBtn.setOnAction(e -> popup.close());
 
         javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setPadding(new Insets(8, 8, 0, 8));
+        topBar.setPadding(new Insets(6, 6, 0, 6));
         topBar.setStyle("-fx-background-color: #0f0f0f;");
 
         VBox root = new VBox(topBar, authPanel);
         root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 400, 500);
         popup.setScene(scene);
+        popup.centerOnScreen();
         popup.showAndWait();
     }
 
@@ -114,19 +128,34 @@ public class LeftPanel extends VBox {
         SettingsPanel settingsPanel = new SettingsPanel(settingsManager);
 
         javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
-        closeBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #555555; -fx-font-size: 14; -fx-cursor: hand; -fx-border-color: transparent;");
+        closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        );
+        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #888888; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        ));
+        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
+            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
+            "-fx-padding: 2 6;"
+        ));
         closeBtn.setOnAction(e -> popup.close());
 
         javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setPadding(new Insets(8, 8, 0, 8));
+        topBar.setPadding(new Insets(6, 6, 0, 6));
         topBar.setStyle("-fx-background-color: #0f0f0f;");
 
         VBox root = new VBox(topBar, settingsPanel);
         root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 520, 580);
         popup.setScene(scene);
+        popup.centerOnScreen();
         popup.showAndWait();
     }
 }
