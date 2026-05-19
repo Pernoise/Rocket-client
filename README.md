@@ -10,6 +10,9 @@ RocketMC is a performance focused Minecraft experience built to be minimal, fast
 * Original gameplay experience
 * Lightweight and smooth
 
+This repository is source-view only.
+Forking, reusing, modifying, or redistributing the code is not allowed.
+
 Join the community:
 https://discord.com/invite/urHfdFdsbh
 
