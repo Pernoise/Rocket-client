@@ -1,0 +1,66 @@
+name: Build Rocket Client
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew build
+
+      - name: Upload Linux JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: RocketClient-Linux
+          path: build/libs/RocketClient-0.1.0.jar
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew build
+
+      - name: Create Windows installer
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path installer-input
+          Copy-Item build/libs/RocketClient-0.1.0.jar installer-input/
+          $javafxPath = "$env:JAVA_HOME"
+          jpackage `
+            --input installer-input `
+            --name "Rocket Client" `
+            --main-jar RocketClient-0.1.0.jar `
+            --main-class com.rocketclient.Main `
+            --type exe `
+            --app-version "0.1.0" `
+            --vendor "Rocket Client" `
+            --description "A performance-focused Minecraft client" `
+            --win-shortcut `
+            --win-menu `
+            --win-dir-chooser `
+            --dest installer-output
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: RocketClient-Windows
+          path: installer-output/*.exe
