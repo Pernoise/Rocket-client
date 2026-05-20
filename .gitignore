@@ -1,11 +1,7 @@
-# Build
 build/
 .gradle/
-
-# IDE
 .idea/
 *.iml
-
-# OS
-.DS_Store
+:run
 Thumbs.db
+.DS_Store
