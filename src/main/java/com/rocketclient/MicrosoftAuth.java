@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class MicrosoftAuth {
 
-    private static final String CLIENT_ID    = "0a27dd74-6ba6-4c1b-9e21-c9ea44b91b64";
+    private static final String CLIENT_ID    = "dc74ccfb-45bd-41c1-b948-1462a516e4c6";
     private static final String REDIRECT_URI = "http://localhost:9876/auth";
     private static final String SCOPE        = "XboxLive.signin offline_access";
     private static final String AUTH_URL     = "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize";
