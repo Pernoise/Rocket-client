@@ -8,6 +8,7 @@ import java.net.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MinecraftLauncher {
 
@@ -21,35 +22,35 @@ public class MinecraftLauncher {
     private static final String VERSION_MANIFEST = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     private static final String FABRIC_META      = "https://meta.fabricmc.net/v2/versions/loader";
 
-    public static void launch(String mcVersion, AccountManager.Account account, SettingsManager settings) throws Exception {
+    public static void launch(String mcVersion, AccountManager.Account account, SettingsManager settings, Consumer<String> log) throws Exception {
         Files.createDirectories(VERSIONS);
         Files.createDirectories(LIBRARIES);
         Files.createDirectories(ASSETS);
         Files.createDirectories(FABRIC_DIR);
 
-        System.out.println("Fetching version manifest...");
-        String versionUrl = getVersionUrl(mcVersion);
+        log.accept("Fetching version manifest...");
+        String versionUrl = getVersionUrl(mcVersion, log);
 
-        System.out.println("Downloading version JSON...");
+        log.accept("Downloading version JSON...");
         JsonObject versionJson = fetchJson(versionUrl);
 
-        System.out.println("Downloading client JAR...");
-        Path clientJar = downloadClientJar(mcVersion, versionJson);
+        log.accept("Downloading client JAR...");
+        Path clientJar = downloadClientJar(mcVersion, versionJson, log);
 
-        System.out.println("Downloading libraries...");
-        List<Path> libs = downloadLibraries(versionJson);
+        log.accept("Downloading libraries...");
+        List<Path> libs = downloadLibraries(versionJson, log);
 
-        System.out.println("Downloading assets...");
-        downloadAssets(versionJson);
+        log.accept("Downloading assets...");
+        downloadAssets(versionJson, log);
 
-        System.out.println("Fetching Fabric loader...");
-        Path fabricJar = downloadFabric(mcVersion);
+        log.accept("Fetching Fabric loader...");
+        Path fabricJar = downloadFabric(mcVersion, log);
 
-        System.out.println("Launching...");
-        startProcess(mcVersion, account, settings, clientJar, fabricJar, libs, versionJson);
+        log.accept("Launching Minecraft...");
+        startProcess(mcVersion, account, settings, clientJar, fabricJar, libs, versionJson, log);
     }
 
-    private static String getVersionUrl(String mcVersion) throws Exception {
+    private static String getVersionUrl(String mcVersion, Consumer<String> log) throws Exception {
         JsonObject manifest = fetchJson(VERSION_MANIFEST);
         JsonArray versions = manifest.getAsJsonArray("versions");
         for (var v : versions) {
@@ -61,19 +62,25 @@ public class MinecraftLauncher {
         throw new Exception("Version not found: " + mcVersion);
     }
 
-    private static Path downloadClientJar(String mcVersion, JsonObject versionJson) throws Exception {
+    private static Path downloadClientJar(String mcVersion, JsonObject versionJson, Consumer<String> log) throws Exception {
         Path jar = VERSIONS.resolve(mcVersion).resolve(mcVersion + ".jar");
-        if (Files.exists(jar)) return jar;
+        if (Files.exists(jar)) {
+            log.accept("Client JAR already exists, skipping.");
+            return jar;
+        }
         Files.createDirectories(jar.getParent());
         String url = versionJson.getAsJsonObject("downloads")
             .getAsJsonObject("client").get("url").getAsString();
-        downloadFile(url, jar);
+        log.accept("Downloading client JAR...");
+        downloadFile(url, jar, log);
         return jar;
     }
 
-    private static List<Path> downloadLibraries(JsonObject versionJson) throws Exception {
+    private static List<Path> downloadLibraries(JsonObject versionJson, Consumer<String> log) throws Exception {
         List<Path> paths = new ArrayList<>();
         JsonArray libs = versionJson.getAsJsonArray("libraries");
+        int total = libs.size();
+        int count = 0;
         for (var lib : libs) {
             JsonObject lo = lib.getAsJsonObject();
             if (lo.has("downloads")) {
@@ -84,16 +91,19 @@ public class MinecraftLauncher {
                     Path dest   = LIBRARIES.resolve(path);
                     if (!Files.exists(dest)) {
                         Files.createDirectories(dest.getParent());
-                        downloadFile(url, dest);
+                        downloadFile(url, dest, log);
                     }
                     paths.add(dest);
                 }
             }
+            count++;
+            if (count % 10 == 0) log.accept("Libraries: " + count + "/" + total);
         }
+        log.accept("Libraries done: " + total + " files.");
         return paths;
     }
 
-    private static void downloadAssets(JsonObject versionJson) throws Exception {
+    private static void downloadAssets(JsonObject versionJson, Consumer<String> log) throws Exception {
         JsonObject assetIndex = versionJson.getAsJsonObject("assetIndex");
         String indexId  = assetIndex.get("id").getAsString();
         String indexUrl = assetIndex.get("url").getAsString();
@@ -101,7 +111,7 @@ public class MinecraftLauncher {
         Path indexFile = ASSETS.resolve("indexes").resolve(indexId + ".json");
         if (!Files.exists(indexFile)) {
             Files.createDirectories(indexFile.getParent());
-            downloadFile(indexUrl, indexFile);
+            downloadFile(indexUrl, indexFile, log);
         }
 
         String indexContent = new String(Files.readAllBytes(indexFile));
@@ -117,15 +127,15 @@ public class MinecraftLauncher {
             Path dest       = ASSETS.resolve("objects").resolve(prefix).resolve(hash);
             if (!Files.exists(dest)) {
                 Files.createDirectories(dest.getParent());
-                downloadFile("https://resources.download.minecraft.net/" + prefix + "/" + hash, dest);
+                downloadFile("https://resources.download.minecraft.net/" + prefix + "/" + hash, dest, log);
             }
             count++;
-            if (count % 50 == 0) System.out.println("Assets: " + count + "/" + total);
+            if (count % 50 == 0) log.accept("Assets: " + count + "/" + total);
         }
-        System.out.println("Assets done: " + total + " files.");
+        log.accept("Assets done: " + total + " files.");
     }
 
-    private static Path downloadFabric(String mcVersion) throws Exception {
+    private static Path downloadFabric(String mcVersion, Consumer<String> log) throws Exception {
         Path fabricJar = FABRIC_DIR.resolve("fabric-loader-" + mcVersion + ".jar");
 
         String loaderUrl = FABRIC_META + "/" + mcVersion;
@@ -135,6 +145,7 @@ public class MinecraftLauncher {
 
         JsonObject loader = loaders.get(0).getAsJsonObject();
         String loaderVersion = loader.getAsJsonObject("loader").get("version").getAsString();
+        log.accept("Fabric loader version: " + loaderVersion);
 
         String launchMeta = "https://meta.fabricmc.net/v2/versions/loader/" + mcVersion + "/" + loaderVersion + "/profile/json";
         JsonObject profile = fetchJson(launchMeta);
@@ -158,7 +169,7 @@ public class MinecraftLauncher {
                 if (!Files.exists(dest)) {
                     Files.createDirectories(dest.getParent());
                     String baseUrl = lo.get("url").getAsString();
-                    downloadFile(baseUrl + path, dest);
+                    downloadFile(baseUrl + path, dest, log);
                 }
                 if (fileName.contains("loader")) lastJar = dest;
             }
@@ -168,7 +179,7 @@ public class MinecraftLauncher {
 
     private static void startProcess(String mcVersion, AccountManager.Account account,
         SettingsManager settings, Path clientJar, Path fabricJar,
-        List<Path> libs, JsonObject versionJson) throws Exception {
+        List<Path> libs, JsonObject versionJson, Consumer<String> log) throws Exception {
 
         StringBuilder cp = new StringBuilder();
         for (Path lib : libs) cp.append(lib.toAbsolutePath()).append(File.pathSeparator);
@@ -222,16 +233,28 @@ public class MinecraftLauncher {
             cmd.add("--assetIndex");  cmd.add(versionJson.getAsJsonObject("assetIndex").get("id").getAsString());
             cmd.add("--userType");    cmd.add(account.type.equals("microsoft") ? "msa" : "legacy");
 
-            System.out.println("Launching: " + String.join(" ", cmd));
+            log.accept("Starting Minecraft process...");
             ProcessBuilder pb = new ProcessBuilder(cmd);
             pb.redirectErrorStream(true);
-            pb.inheritIO();
             Process process = pb.start();
-            System.out.println("Minecraft launched!");
+            log.accept("Minecraft launched!");
+
+            // Stream Minecraft output to log window
+            new Thread(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        log.accept(line);
+                    }
+                } catch (Exception e) {
+                    log.accept("Log stream ended.");
+                }
+            }).start();
 
             new Thread(() -> {
                 try {
                     process.waitFor();
+                    log.accept("Minecraft exited.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } finally {
@@ -255,8 +278,8 @@ public class MinecraftLauncher {
         return new String(conn.getInputStream().readAllBytes());
     }
 
-    private static void downloadFile(String urlStr, Path dest) throws Exception {
-        System.out.println("Downloading: " + dest.getFileName());
+    private static void downloadFile(String urlStr, Path dest, Consumer<String> log) throws Exception {
+        log.accept("Downloading: " + dest.getFileName());
         URL url = new URL(urlStr);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestProperty("User-Agent", "RocketClient/0.1");

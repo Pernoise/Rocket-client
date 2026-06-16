@@ -209,6 +209,9 @@ public class CenterPanel extends VBox {
         playBtn.setDisable(true);
         playBtn.setText("Launching...");
 
+        LaunchLogWindow logWindow = new LaunchLogWindow();
+        logWindow.show();
+
         AccountManager.Account account = accountManager.getSelected();
         boolean useFabric = fabricMode;
         String version    = currentVersion;
@@ -217,20 +220,22 @@ public class CenterPanel extends VBox {
             try {
                 if (useFabric) {
                     settingsManager.javaPath = "/usr/lib/jvm/java-26-openjdk/bin/java";
-                    MinecraftLauncher.launch(version, account, settingsManager);
+                    MinecraftLauncher.launch(version, account, settingsManager, logWindow::appendLog);
                 } else {
                     settingsManager.javaPath = "/usr/lib/jvm/java-8-openjdk/bin/java";
-                    MinecraftLauncher.launch("1.8.9", account, settingsManager);
+                    MinecraftLauncher.launch("1.8.9", account, settingsManager, logWindow::appendLog);
                 }
                 javafx.application.Platform.runLater(() -> {
                     playBtn.setText("▶   Play  [" + version + "]");
                     playBtn.setDisable(false);
+                    logWindow.setTitle("Rocket Client — Minecraft Running");
                 });
             } catch (Exception ex) {
                 javafx.application.Platform.runLater(() -> {
                     playBtn.setText("Launch failed!");
                     playBtn.setDisable(false);
-                    System.out.println("Launch error: " + ex.getMessage());
+                    logWindow.appendLog("ERROR: " + ex.getMessage());
+                    logWindow.setTitle("Rocket Client — Launch Failed");
                 });
             }
         });
@@ -251,3 +256,4 @@ public class CenterPanel extends VBox {
         }
     }
 }
+
