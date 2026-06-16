@@ -20,6 +20,11 @@ jobs:
       - name: Build JAR
         run: ./gradlew jar copyDeps
 
+      - name: Download JavaFX jmods
+        run: |
+          curl -L https://download2.gluonhq.com/openjfx/21.0.5/openjfx-21.0.5_windows-x64_bin-jmods.zip -o javafx-jmods.zip
+          Expand-Archive javafx-jmods.zip -DestinationPath javafx-jmods
+
       - name: Package EXE with jpackage
         run: |
           jpackage `
@@ -28,7 +33,9 @@ jobs:
             --main-class com.rocketclient.Main `
             --type exe `
             --name RocketClient `
-            --app-version 0.1.0 `
+            --app-version 0.2.0 `
+            --module-path javafx-jmods/javafx-jmods-21.0.5 `
+            --add-modules javafx.controls,javafx.fxml,javafx.swing `
             --dest build/dist
 
       - name: Upload EXE artifact
