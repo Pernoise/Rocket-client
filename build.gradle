@@ -44,3 +44,19 @@ task copyDeps(type: Copy) {
 }
 
 build.dependsOn copyDeps
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+            'Main-Class': 'com.rocketclient.Main'
+        )
+    }
+    archiveClassifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    with jar
+}

@@ -104,7 +104,6 @@ public class MinecraftLauncher {
             downloadFile(indexUrl, indexFile);
         }
 
-        // Read from file directly — no HTTP needed
         String indexContent = new String(Files.readAllBytes(indexFile));
         JsonObject objects = GSON.fromJson(indexContent, JsonObject.class)
             .getAsJsonObject("objects");
@@ -178,7 +177,6 @@ public class MinecraftLauncher {
             cp.append(File.pathSeparator).append(fabricJar.toAbsolutePath());
         }
 
-        // Add all fabric libs from profile
         Path profilePath = FABRIC_DIR.resolve("fabric-" + mcVersion + ".json");
         if (Files.exists(profilePath)) {
             String profileContent = new String(Files.readAllBytes(profilePath));
@@ -228,8 +226,19 @@ public class MinecraftLauncher {
             ProcessBuilder pb = new ProcessBuilder(cmd);
             pb.redirectErrorStream(true);
             pb.inheritIO();
-            pb.start();
+            Process process = pb.start();
             System.out.println("Minecraft launched!");
+
+            new Thread(() -> {
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    javafx.application.Platform.exit();
+                    System.exit(0);
+                }
+            }).start();
         }
     }
 
