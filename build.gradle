@@ -11,10 +11,13 @@ repositories {
     mavenCentral()
 }
 
+def currentPlatform = System.getProperty('os.name').toLowerCase().contains('win') ? 'win' :
+                      System.getProperty('os.name').toLowerCase().contains('mac') ? 'mac' : 'linux'
+
 javafx {
     version = '21.0.5'
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
-    platform = 'linux'
+    platform = currentPlatform
 }
 
 application {
