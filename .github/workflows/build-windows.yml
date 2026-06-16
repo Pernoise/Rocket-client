@@ -20,14 +20,11 @@ jobs:
       - name: Build JAR
         run: ./gradlew jar copyDeps
 
-      - name: List build/libs
-        run: ls build/libs/
-
       - name: Package EXE with jpackage
         run: |
           jpackage `
             --input build/libs `
-            --main-jar Rocket-client-0.1.0.jar `
+            --main-jar RocketClient-0.1.0.jar `
             --main-class com.rocketclient.Main `
             --type exe `
             --name RocketClient `
