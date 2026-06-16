@@ -1,0 +1,38 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: ./gradlew jar copyDeps
+
+      - name: Package EXE with jpackage
+        run: |
+          jpackage `
+            --input build/libs `
+            --main-jar Rocket-client-0.1.0.jar `
+            --main-class com.rocketclient.Main `
+            --type exe `
+            --name RocketClient `
+            --app-version 0.1.0 `
+            --dest build/dist
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RocketClient-windows
+          path: build/dist/*.exe
