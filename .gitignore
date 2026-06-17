@@ -5,3 +5,8 @@ build/
 :run
 Thumbs.db
 .DS_Store
+logs/
+config/
+local/
+fabricloader.log
+*.log.gz
