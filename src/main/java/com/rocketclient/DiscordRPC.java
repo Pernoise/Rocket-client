@@ -32,7 +32,7 @@ public class DiscordRPC {
 
                 // Handshake
                 JsonObject handshake = new JsonObject();
-                handshake.addProperty("v",        1);
+                handshake.addProperty("v",        3);
                 handshake.addProperty("client_id", APP_ID);
                 send(0, handshake);
 
@@ -42,7 +42,7 @@ public class DiscordRPC {
                 System.out.println("Discord RPC connected.");
 
                 // Set initial presence
-                setPresence("In the launcher", "Rocket Client bETA v0.3");
+                setPresence("In the launcher", "Rocket Client Beta v0.3");
 
                 // Keep alive loop
                 while (running) {
@@ -85,7 +85,7 @@ public class DiscordRPC {
     }
 
     public static void updatePlaying(String version) {
-        setPresence("Playing Minecraft " + version, "Rocket Client Alpha v0.1");
+        setPresence("Playing Minecraft " + version, "Rocket Client Beta v0.3");
     }
 
     public static void stop() {
