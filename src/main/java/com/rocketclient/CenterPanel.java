@@ -219,10 +219,8 @@ public class CenterPanel extends VBox {
         Thread thread = new Thread(() -> {
             try {
                 if (useFabric) {
-                    settingsManager.javaPath = "/usr/lib/jvm/java-26-openjdk/bin/java";
                     MinecraftLauncher.launch(version, account, settingsManager, logWindow::appendLog);
                 } else {
-                    settingsManager.javaPath = "/usr/lib/jvm/java-8-openjdk/bin/java";
                     MinecraftLauncher.launch("1.8.9", account, settingsManager, logWindow::appendLog);
                 }
                 javafx.application.Platform.runLater(() -> {
