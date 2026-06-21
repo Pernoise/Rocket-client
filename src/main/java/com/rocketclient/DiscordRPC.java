@@ -42,7 +42,7 @@ public class DiscordRPC {
                 System.out.println("Discord RPC connected.");
 
                 // Set initial presence
-                setPresence("In the launcher", "Rocket Client Alpha v0.1");
+                setPresence("In the launcher", "Rocket Client bETA v0.3");
 
                 // Keep alive loop
                 while (running) {
