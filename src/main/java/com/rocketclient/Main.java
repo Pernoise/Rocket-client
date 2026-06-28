@@ -43,6 +43,17 @@ public class Main extends Application {
             minimizeBtn.setOnMouseExited(e -> minimizeBtn.setStyle(titleBtnStyle()));
             minimizeBtn.setOnAction(e -> stage.setIconified(true));
 
+            final boolean[] maximized = {false};
+            Button maximizeBtn = new Button("[]");
+            maximizeBtn.setStyle(titleBtnStyle());
+            maximizeBtn.setOnMouseEntered(e -> maximizeBtn.setStyle(titleBtnHoverStyle()));
+            maximizeBtn.setOnMouseExited(e -> maximizeBtn.setStyle(titleBtnStyle()));
+            maximizeBtn.setOnAction(e -> {
+                maximized[0] = !maximized[0];
+                stage.setMaximized(maximized[0]);
+                maximizeBtn.setText(maximized[0] ? "[-]" : "[]");
+            });
+
             Button closeBtn = new Button("x");
             closeBtn.setStyle(titleBtnStyle());
             closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(closeBtnHoverStyle()));
@@ -52,14 +63,19 @@ public class Main extends Application {
             HBox spacer = new HBox();
             HBox.setHgrow(spacer, Priority.ALWAYS);
 
-            HBox titleBar = new HBox(0, titleLabel, spacer, minimizeBtn, closeBtn);
+            HBox titleBar = new HBox(0, titleLabel, spacer, minimizeBtn, maximizeBtn, closeBtn);
             titleBar.setMaxWidth(Double.MAX_VALUE);
             titleBar.setAlignment(Pos.CENTER_LEFT);
             titleBar.setPadding(new Insets(6, 8, 6, 12));
             titleBar.setStyle("-fx-background-color: #080404; -fx-background-radius: 12 12 0 0;");
 
             titleBar.setOnMousePressed(e -> { xOffset = e.getSceneX(); yOffset = e.getSceneY(); });
-            titleBar.setOnMouseDragged(e -> { stage.setX(e.getScreenX() - xOffset); stage.setY(e.getScreenY() - yOffset); });
+            titleBar.setOnMouseDragged(e -> {
+                if (!stage.isMaximized()) {
+                    stage.setX(e.getScreenX() - xOffset);
+                    stage.setY(e.getScreenY() - yOffset);
+                }
+            });
 
             BorderPane root = new BorderPane();
             root.setStyle("-fx-background-color: #080404; -fx-font-family: 'JetBrains Mono'; -fx-background-radius: 0 0 12 12;");

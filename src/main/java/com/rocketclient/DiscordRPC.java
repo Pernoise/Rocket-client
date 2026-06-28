@@ -3,8 +3,6 @@ package com.rocketclient;
 import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 import java.io.*;
-import java.net.UnixDomainSocketAddress;
-import java.net.StandardProtocolFamily;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
@@ -14,9 +12,11 @@ public class DiscordRPC {
 
     private static final String APP_ID  = "1505307149201576066";
     private static final Gson   GSON    = new Gson();
-    private static SocketChannel socket = null;
-    private static boolean running      = false;
-    private static int nonce            = 1;
+    private static SocketChannel      socket = null;
+    private static RandomAccessFile   pipe   = null;
+    private static boolean running           = false;
+    private static boolean isWindows         = System.getProperty("os.name").toLowerCase().contains("win");
+    private static int nonce                 = 1;
 
     public static void start(SettingsManager settings) {
         if (!settings.discordRpc) return;
@@ -24,27 +24,30 @@ public class DiscordRPC {
 
         Thread thread = new Thread(() -> {
             try {
-                socket = connectToDiscord();
-                if (socket == null) {
-                    System.out.println("Discord not running, RPC skipped.");
-                    return;
+                if (isWindows) {
+                    pipe = connectToDiscordWindows();
+                    if (pipe == null) {
+                        System.out.println("Discord not running, RPC skipped.");
+                        return;
+                    }
+                } else {
+                    socket = connectToDiscordUnix();
+                    if (socket == null) {
+                        System.out.println("Discord not running, RPC skipped.");
+                        return;
+                    }
                 }
 
-                // Handshake
                 JsonObject handshake = new JsonObject();
-                handshake.addProperty("v",        3);
+                handshake.addProperty("v",         3);
                 handshake.addProperty("client_id", APP_ID);
                 send(0, handshake);
-
-                // Read handshake response
                 read();
                 running = true;
                 System.out.println("Discord RPC connected.");
 
-                // Set initial presence
-                setPresence("In the launcher", "Rocket Client Beta v0.3");
+                setPresence("In the launcher", "Rocket Client Beta v0.4");
 
-                // Keep alive loop
                 while (running) {
                     Thread.sleep(5000);
                 }
@@ -56,8 +59,8 @@ public class DiscordRPC {
         thread.start();
     }
 
-    public static void setPresence(String details, String state) {
-        if (!running || socket == null) return;
+    public static synchronized void setPresence(String details, String state) {
+        if (!running) return;
         try {
             JsonObject activity = new JsonObject();
             activity.addProperty("details", details);
@@ -85,17 +88,25 @@ public class DiscordRPC {
     }
 
     public static void updatePlaying(String version) {
-        setPresence("Playing Minecraft " + version, "Rocket Client Beta v0.3");
+        setPresence("Playing Minecraft " + version, "Rocket Client Beta v0.4");
     }
 
     public static void stop() {
         running = false;
-        try {
-            if (socket != null) socket.close();
-        } catch (Exception ignored) {}
+        try { if (socket != null) socket.close(); } catch (Exception ignored) {}
+        try { if (pipe   != null) pipe.close();   } catch (Exception ignored) {}
     }
 
-    private static SocketChannel connectToDiscord() {
+    private static RandomAccessFile connectToDiscordWindows() {
+        for (int i = 0; i < 10; i++) {
+            try {
+                return new RandomAccessFile("\\\\.\\pipe\\discord-ipc-" + i, "rw");
+            } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    private static SocketChannel connectToDiscordUnix() {
         String[] tmpDirs = {
             System.getenv("XDG_RUNTIME_DIR"),
             System.getenv("TMPDIR"),
@@ -103,14 +114,13 @@ public class DiscordRPC {
             System.getenv("TEMP"),
             "/tmp"
         };
-
         for (String dir : tmpDirs) {
             if (dir == null) continue;
             for (int i = 0; i < 10; i++) {
                 try {
                     Path path = Path.of(dir, "discord-ipc-" + i);
-                    UnixDomainSocketAddress addr = UnixDomainSocketAddress.of(path);
-                    SocketChannel ch = SocketChannel.open(StandardProtocolFamily.UNIX);
+                    java.net.UnixDomainSocketAddress addr = java.net.UnixDomainSocketAddress.of(path);
+                    SocketChannel ch = SocketChannel.open(java.net.StandardProtocolFamily.UNIX);
                     ch.connect(addr);
                     return ch;
                 } catch (Exception ignored) {}
@@ -119,26 +129,42 @@ public class DiscordRPC {
         return null;
     }
 
-    private static void send(int opcode, JsonObject payload) throws Exception {
+    private static synchronized void send(int opcode, JsonObject payload) throws Exception {
         byte[] data = GSON.toJson(payload).getBytes("UTF-8");
         ByteBuffer buf = ByteBuffer.allocate(8 + data.length);
         buf.order(ByteOrder.LITTLE_ENDIAN);
         buf.putInt(opcode);
         buf.putInt(data.length);
         buf.put(data);
-        buf.flip();
-        socket.write(buf);
+
+        if (isWindows && pipe != null) {
+            pipe.write(buf.array());
+        } else if (socket != null) {
+            buf.flip();
+            socket.write(buf);
+        }
     }
 
-    private static String read() throws Exception {
-        ByteBuffer header = ByteBuffer.allocate(8);
-        header.order(ByteOrder.LITTLE_ENDIAN);
-        socket.read(header);
-        header.flip();
-        header.getInt(); // opcode
-        int length = header.getInt();
-        ByteBuffer body = ByteBuffer.allocate(length);
-        socket.read(body);
-        return new String(body.array(), "UTF-8");
+    private static synchronized String read() throws Exception {
+        if (isWindows && pipe != null) {
+            byte[] header = new byte[8];
+            pipe.readFully(header);
+            ByteBuffer hbuf = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN);
+            hbuf.getInt();
+            int length = hbuf.getInt();
+            byte[] body = new byte[length];
+            pipe.readFully(body);
+            return new String(body, "UTF-8");
+        } else {
+            ByteBuffer header = ByteBuffer.allocate(8);
+            header.order(ByteOrder.LITTLE_ENDIAN);
+            socket.read(header);
+            header.flip();
+            header.getInt();
+            int length = header.getInt();
+            ByteBuffer body = ByteBuffer.allocate(length);
+            socket.read(body);
+            return new String(body.array(), "UTF-8");
+        }
     }
 }
