@@ -38,7 +38,7 @@ public class CenterPanel extends VBox {
         Label name = new Label("Rocket Client");
         name.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 28; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
-        Label tagline = new Label("A Minecraft performance-focused client — BETA");
+        Label tagline = new Label("A Minecraft performance-focused client - BETA");
         tagline.setStyle("-fx-text-fill: #2e2e2e; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
         Label quote = new Label(loadRandomQuote());
@@ -50,7 +50,6 @@ public class CenterPanel extends VBox {
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Loader icon
         ImageView loaderIcon = new ImageView();
         loaderIcon.setFitWidth(22);
         loaderIcon.setFitHeight(22);
@@ -65,10 +64,9 @@ public class CenterPanel extends VBox {
             "-fx-border-radius: 8 0 0 8; -fx-background-radius: 8 0 0 8; " +
             "-fx-cursor: hand; -fx-padding: 14 10;"
         );
-        loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric — click to switch to Forge 1.8.9"));
+        loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
 
-        // Play button
-        Button playBtn = new Button("▶   Play  [" + currentVersion + "]");
+        Button playBtn = new Button(">   Play  [" + currentVersion + "]");
         playBtn.setStyle(
             "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
@@ -94,8 +92,7 @@ public class CenterPanel extends VBox {
             "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;"
         ));
 
-        // Version arrow
-        Button versionBtn = new Button("▾");
+        Button versionBtn = new Button("v");
         versionBtn.setStyle(
             "-fx-background-color: #0f0f0f; -fx-text-fill: #555555; " +
             "-fx-font-size: 13; -fx-font-weight: bold; " +
@@ -107,7 +104,6 @@ public class CenterPanel extends VBox {
         HBox playRow = new HBox(0, loaderBtn, playBtn, versionBtn);
         playRow.setMaxWidth(Double.MAX_VALUE);
 
-        // Version list
         VBox versionList = new VBox(2);
         versionList.setStyle("-fx-background-color: #0d0d0d;");
         versionList.setPadding(new Insets(4));
@@ -136,7 +132,7 @@ public class CenterPanel extends VBox {
             vLabel.setOnMouseExited(e  -> vLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;"));
             vLabel.setOnMouseClicked(e -> {
                 currentVersion = v;
-                playBtn.setText("▶   Play  [" + v + "]");
+                playBtn.setText(">   Play  [" + v + "]");
                 scrollPane.setVisible(false);
                 scrollPane.setManaged(false);
             });
@@ -154,18 +150,18 @@ public class CenterPanel extends VBox {
             setLoaderIcon(loaderIcon, fabricMode);
             if (fabricMode) {
                 currentVersion = "26.1.2";
-                playBtn.setText("▶   Play  [26.1.2]");
+                playBtn.setText(">   Play  [26.1.2]");
                 versionBtn.setVisible(true);
                 versionBtn.setManaged(true);
-                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric — click to switch to Forge 1.8.9"));
+                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
             } else {
                 currentVersion = "1.8.9";
-                playBtn.setText("▶   Play  [1.8.9 — Forge]");
+                playBtn.setText(">   Play  [1.8.9 - Forge]");
                 versionBtn.setVisible(false);
                 versionBtn.setManaged(false);
                 scrollPane.setVisible(false);
                 scrollPane.setManaged(false);
-                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Forge 1.8.9 — click to switch to Fabric"));
+                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Forge 1.8.9 - click to switch to Fabric"));
             }
         });
 
@@ -216,6 +212,8 @@ public class CenterPanel extends VBox {
         boolean useFabric = fabricMode;
         String version    = currentVersion;
 
+        DiscordRPC.updatePlaying(version);
+
         Thread thread = new Thread(() -> {
             try {
                 if (useFabric) {
@@ -224,17 +222,18 @@ public class CenterPanel extends VBox {
                     MinecraftLauncher.launch("1.8.9", account, settingsManager, logWindow::appendLog);
                 }
                 javafx.application.Platform.runLater(() -> {
-                    playBtn.setText("▶   Play  [" + version + "]");
+                    playBtn.setText(">   Play  [" + version + "]");
                     playBtn.setDisable(false);
-                    logWindow.setTitle("Rocket Client — Minecraft Running");
+                    logWindow.setTitle("Rocket Client - Minecraft Running");
                 });
             } catch (Exception ex) {
                 javafx.application.Platform.runLater(() -> {
                     playBtn.setText("Launch failed!");
                     playBtn.setDisable(false);
                     logWindow.appendLog("ERROR: " + ex.getMessage());
-                    logWindow.setTitle("Rocket Client — Launch Failed");
+                    logWindow.setTitle("Rocket Client - Launch Failed");
                 });
+                DiscordRPC.setPresence("In the launcher", "Rocket Client Beta v0.4");
             }
         });
         thread.setDaemon(true);
@@ -254,4 +253,3 @@ public class CenterPanel extends VBox {
         }
     }
 }
-

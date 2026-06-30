@@ -1,11 +1,14 @@
 package com.rocketclient;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -16,6 +19,7 @@ public class LeftPanel extends VBox {
 
     private final AccountManager accountManager;
     private final SettingsManager settingsManager;
+    private VBox accountWidget = new VBox(4);
 
     public LeftPanel(AccountManager accountManager, SettingsManager settingsManager) {
         this.accountManager  = accountManager;
@@ -29,16 +33,41 @@ public class LeftPanel extends VBox {
 
         VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true,  null,  false, false);
         VBox account  = createIcon("icons/user.png",          "Account",       false, null,  true,  false);
-        VBox store    = createIcon("icons/handbag-simple.png","Store — Coming Soon", false, null, false, false);
+        VBox store    = createIcon("icons/handbag-simple.png","Store - Coming Soon", false, null, false, false);
         VBox settings = createIcon("icons/gear.png",          "Settings",      false, null,  false, true);
 
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        accountWidget.setAlignment(Pos.CENTER);
+        refreshAccountWidget();
+
         VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
         VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
 
-        getChildren().addAll(logo, account, store, settings, spacer, discord, website);
+        getChildren().addAll(logo, account, store, settings, spacer, accountWidget, discord, website);
+    }
+
+    public void refreshAccountWidget() {
+        accountWidget.getChildren().clear();
+        AccountManager.Account acc = accountManager.getSelected();
+        if (acc == null) return;
+
+        try {
+            String avatarUrl = "https://crafatar.com/avatars/" + acc.uuid + "?size=16&overlay=true";
+            Image avatar = new Image(avatarUrl, true);
+            ImageView iv = new ImageView(avatar);
+            iv.setFitWidth(24);
+            iv.setFitHeight(24);
+            iv.setPreserveRatio(true);
+
+            Label nameLabel = new Label(acc.username);
+            nameLabel.setStyle("-fx-text-fill: #444444; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+
+            Platform.runLater(() -> accountWidget.getChildren().addAll(iv, nameLabel));
+        } catch (Exception e) {
+            System.out.println("Could not load avatar: " + e.getMessage());
+        }
     }
 
     private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url, boolean isAuth, boolean isSettings) {
@@ -88,7 +117,7 @@ public class LeftPanel extends VBox {
 
         AuthPanel authPanel = new AuthPanel(accountManager);
 
-        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
+        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
         closeBtn.setStyle(
             "-fx-background-color: transparent; -fx-text-fill: #444444; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
@@ -104,7 +133,10 @@ public class LeftPanel extends VBox {
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         ));
-        closeBtn.setOnAction(e -> popup.close());
+        closeBtn.setOnAction(e -> {
+            popup.close();
+            refreshAccountWidget();
+        });
 
         javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
         topBar.setAlignment(Pos.CENTER_RIGHT);
@@ -127,7 +159,7 @@ public class LeftPanel extends VBox {
 
         SettingsPanel settingsPanel = new SettingsPanel(settingsManager);
 
-        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("✕");
+        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
         closeBtn.setStyle(
             "-fx-background-color: transparent; -fx-text-fill: #444444; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
