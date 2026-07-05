@@ -33,7 +33,6 @@ public class LeftPanel extends VBox {
 
         VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true,  null,  false, false);
         VBox account  = createIcon("icons/user.png",          "Account",       false, null,  true,  false);
-        VBox store    = createIcon("icons/handbag-simple.png","Store - Coming Soon", false, null, false, false);
         VBox settings = createIcon("icons/gear.png",          "Settings",      false, null,  false, true);
 
         VBox spacer = new VBox();
@@ -44,8 +43,8 @@ public class LeftPanel extends VBox {
 
         VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
         VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
+        getChildren().addAll(logo, account, settings, spacer, accountWidget, discord, website);
 
-        getChildren().addAll(logo, account, store, settings, spacer, accountWidget, discord, website);
     }
 
     public void refreshAccountWidget() {
