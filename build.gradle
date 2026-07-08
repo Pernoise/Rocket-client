@@ -15,8 +15,8 @@ def currentPlatform = System.getProperty('os.name').toLowerCase().contains('win'
                       System.getProperty('os.name').toLowerCase().contains('mac') ? 'mac' : 'linux'
 
 javafx {
-    version = '21.0.5'
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
+    version = '22'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
     platform = currentPlatform
 }
 

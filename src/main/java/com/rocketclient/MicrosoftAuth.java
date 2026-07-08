@@ -2,60 +2,107 @@ package com.rocketclient;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class MicrosoftAuth {
 
-    private static final String CLIENT_ID = "dc74ccfb-45bd-41c1-b948-1462a516e4c6";
-    private static final Gson GSON = new Gson();
+    private static final String CLIENT_ID    = "dc74ccfb-45bd-41c1-b948-1462a516e4c6";
+    private static final String REDIRECT_URI = "https://login.microsoftonline.com/common/oauth2/nativeclient";
+    private static final Gson   GSON         = new Gson();
 
     public static AccountManager.Account login(Consumer<String> statusCallback) throws Exception {
-        String deviceCodeUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode";
-        String body = "client_id=" + CLIENT_ID + "&scope=" + URLEncoder.encode("XboxLive.signin offline_access", "UTF-8");
+        CompletableFuture<String> codeFuture = new CompletableFuture<>();
 
-        JsonObject deviceResponse = post(deviceCodeUrl, body, "application/x-www-form-urlencoded", null);
-        System.out.println("Device response: " + GSON.toJson(deviceResponse));
+        String authUrl =
+            "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize" +
+            "?client_id=" + CLIENT_ID +
+            "&response_type=code" +
+            "&redirect_uri=" + URLEncoder.encode(REDIRECT_URI, "UTF-8") +
+            "&scope=" + URLEncoder.encode("XboxLive.signin offline_access", "UTF-8") +
+            "&prompt=select_account";
 
-        String userCode   = deviceResponse.get("user_code").getAsString();
-        String deviceCode = deviceResponse.get("device_code").getAsString();
-        String verifyUrl  = deviceResponse.get("verification_uri").getAsString();
-        int interval      = deviceResponse.has("interval") ? deviceResponse.get("interval").getAsInt() : 5;
+        System.setProperty("javax.net.ssl.trustStore", System.getProperty("java.home") + "\\lib\\security\\cacerts"); Platform.runLater(() -> {
+            Stage browserStage = new Stage();
+            browserStage.initModality(Modality.APPLICATION_MODAL);
+            browserStage.setTitle("Login with Microsoft");
+            browserStage.setWidth(500);
+            browserStage.setHeight(650);
 
-        statusCallback.accept("Go to " + verifyUrl + " and enter code: " + userCode);
-        BrowserUtil.open(verifyUrl);
+            WebView webView = new WebView();
+            WebEngine engine = webView.getEngine();
 
-        String tokenUrl = "https://login.microsoftonline.com/consumers/oauth2/v2.0/token";
-        String pollBody = "client_id=" + CLIENT_ID +
-            "&grant_type=urn:ietf:params:oauth:grant-type:device_code" +
-            "&device_code=" + URLEncoder.encode(deviceCode, "UTF-8");
+            engine.locationProperty().addListener((obs, oldUrl, newUrl) -> {
+                if (newUrl != null && newUrl.startsWith(REDIRECT_URI)) {
+                    try {
+                        String query = new URL(newUrl).getQuery();
+                        if (query != null) {
+                            for (String param : query.split("&")) {
+                                if (param.startsWith("code=")) {
+                                    String code = URLDecoder.decode(param.substring(5), "UTF-8");
+                                    engine.load("about:blank");
+                                    codeFuture.complete(code);
+                                    browserStage.close();
+                                    break;
+                                }
+                            }
+                        }
+                        if (newUrl.contains("error=")) {
+                            codeFuture.completeExceptionally(new Exception("Login cancelled or failed"));
+                            browserStage.close();
+                        }
+                    } catch (Exception e) {
+                        codeFuture.completeExceptionally(e);
+                        browserStage.close();
+                    }
+                }
+            });
 
-        for (int i = 0; i < 60; i++) {
-            Thread.sleep(interval * 1000L);
-            JsonObject tokenResponse = post(tokenUrl, pollBody, "application/x-www-form-urlencoded", null);
+            browserStage.setOnCloseRequest(e -> {
+                if (!codeFuture.isDone()) {
+                    codeFuture.completeExceptionally(new Exception("Login window closed"));
+                }
+            });
 
-            if (tokenResponse.has("access_token")) {
-                String accessToken  = tokenResponse.get("access_token").getAsString();
-                String refreshToken = tokenResponse.has("refresh_token") ? tokenResponse.get("refresh_token").getAsString() : "";
-                statusCallback.accept("Authenticating with Xbox...");
-                return exchangeForAccount(accessToken, refreshToken);
-            }
+            engine.load(authUrl);
+            browserStage.setScene(new Scene(webView));
+            browserStage.show();
+        });
 
-            if (tokenResponse.has("error")) {
-                String error = tokenResponse.get("error").getAsString();
-                if (error.equals("authorization_pending")) continue;
-                if (error.equals("slow_down")) { Thread.sleep(5000); continue; }
-                throw new Exception(tokenResponse.has("error_description") ?
-                    tokenResponse.get("error_description").getAsString() : error);
-            }
-        }
-
-        throw new Exception("Login timed out.");
+        statusCallback.accept("Complete login in the browser window...");
+        String code = codeFuture.get();
+        statusCallback.accept("Authenticating...");
+        return exchangeCodeForAccount(code);
     }
 
-    private static AccountManager.Account exchangeForAccount(String accessToken, String refreshToken) throws Exception {
+    private static AccountManager.Account exchangeCodeForAccount(String code) throws Exception {
+        String tokenBody =
+            "client_id=" + CLIENT_ID +
+            "&code=" + URLEncoder.encode(code, "UTF-8") +
+            "&redirect_uri=" + URLEncoder.encode(REDIRECT_URI, "UTF-8") +
+            "&grant_type=authorization_code";
+
+        JsonObject tokenResponse = post(
+            "https://login.microsoftonline.com/consumers/oauth2/v2.0/token",
+            tokenBody, "application/x-www-form-urlencoded", null
+        );
+
+        if (tokenResponse.has("error")) {
+            throw new Exception(tokenResponse.get("error_description").getAsString());
+        }
+
+        String accessToken  = tokenResponse.get("access_token").getAsString();
+        String refreshToken = tokenResponse.has("refresh_token") ? tokenResponse.get("refresh_token").getAsString() : "";
+
         JsonObject xblBody = new JsonObject();
         JsonObject props = new JsonObject();
         props.addProperty("AuthMethod", "RPS");

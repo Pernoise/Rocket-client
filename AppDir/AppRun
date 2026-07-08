@@ -1,7 +1,0 @@
-#!/bin/bash
-HERE="$(dirname "$(readlink -f "${0}")")"
-exec java \
-  --module-path "$HERE/usr/bin/deps" \
-  --add-modules javafx.controls,javafx.fxml,javafx.swing \
-  -cp "$HERE/usr/bin/RocketClient-0.1.0.jar:$HERE/usr/bin/deps/*" \
-  com.rocketclient.Main "$@"
