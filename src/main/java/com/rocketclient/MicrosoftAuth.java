@@ -39,7 +39,7 @@ public class MicrosoftAuth {
             browserStage.setHeight(650);
 
             WebView webView = new WebView();
-            WebEngine engine = webView.getEngine();
+            WebEngine engine = webView.getEngine(); engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
             engine.locationProperty().addListener((obs, oldUrl, newUrl) -> {
                 if (newUrl != null && newUrl.startsWith(REDIRECT_URI)) {
