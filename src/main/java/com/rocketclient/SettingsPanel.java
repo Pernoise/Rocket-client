@@ -207,10 +207,10 @@ public class SettingsPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
         panel.setAlignment(Pos.TOP_LEFT);
 
-        Label version = new Label("Rocket Client — Alpha v0.1");
+        Label version = new Label("Rocket Client — Beta v0.6");
         version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
-        Label desc = new Label("A performance-focused Minecraft client.\nOpen source, no ads, no telemetry.");
+        Label desc = new Label("A modern, lightweight Minecraft launcher built with love and... JavaFX. .");
         desc.setStyle("-fx-text-fill: #444444; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         desc.setWrapText(true);
 
@@ -219,7 +219,7 @@ public class SettingsPanel extends VBox {
 
         panel.getChildren().add(sectionLabel("Links"));
         panel.getChildren().add(linkLabel("Discord", "https://discord.com/invite/urHfdFdsbh"));
-        panel.getChildren().add(linkLabel("Website", "https://rocketclient.rocketclient.abrdns.com/#home"));
+        panel.getChildren().add(linkLabel("Website", "https://rocketclient.rocketclient.abrdns.com"));
 
         panel.getChildren().add(sectionLabel("Updates"));
         Button checkUpdateBtn = new Button("Check for Updates");
