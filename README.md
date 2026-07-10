@@ -139,7 +139,7 @@ Please refer to the **LICENSE** file for the complete terms and restrictions.
 
 # Reporting Issues
 
-If you encounter a bug or unexpected behavior, please open a GitHub Issue including:
+If you encounter a bug or unexpected behavior, please open a ticket in the discord including:
 
 - Rocket Client version
 - Operating system
