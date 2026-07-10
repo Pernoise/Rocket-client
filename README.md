@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src/main/resources/icons/rocket-launch.png" width="128" alt="Rocket Client Logo">
+<img src="src/main/resources/images/icon.png" width="128" alt="Rocket Client Logo">
 
 # Rocket Client
 
