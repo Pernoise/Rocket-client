@@ -1,66 +1,67 @@
 <div align="center">
 
-<img src="docs/images/logo.png" width="128" alt="Rocket Client Logo">
+<img src="src/main/resources/icons/rocket-launch.png" width="128" alt="Rocket Client Logo">
 
 # Rocket Client
 
-A modern Minecraft launcher built with JavaFX.
+A modern, lightweight Minecraft launcher built with JavaFX.
 
 ![Java](https://img.shields.io/badge/Java-22-red)
 ![JavaFX](https://img.shields.io/badge/JavaFX-22-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-success)
 ![Status](https://img.shields.io/badge/Status-Beta-orange)
 
-A lightweight launcher focused on performance, simplicity, and a modern user experience.
+Rocket Client is a modern Minecraft launcher focused on performance, simplicity, and a clean user experience.
 
 </div>
 
 ---
 
-# About
+## About
 
-Rocket Client is a standalone Minecraft launcher developed by **Pernoise**.
+Rocket Client is an independently developed Minecraft launcher created by **Pernoise**.
 
-The project is built using **Java** and **JavaFX**, with an emphasis on clean design, efficient performance, and an intuitive user experience. Rocket Client supports Microsoft and Ely.by authentication, Discord Rich Presence, multiple Minecraft versions, and continues to receive regular updates.
+Built entirely with **Java** and **JavaFX**, Rocket Client is designed to provide a clean, responsive, and lightweight experience without sacrificing modern functionality. The project supports Microsoft and Ely.by authentication, Discord Rich Presence, multiple Minecraft versions, and continues to evolve with new features and improvements.
 
-Unlike many launchers, Rocket Client is developed with a focus on keeping the interface simple while providing the features players actually need.
+Rocket Client is currently in **Beta** and is under active development.
 
 ---
 
 # Gallery
 
-## Home
+## Launcher
 
-![Home](docs/images/home.png)
+![Launcher](src/main/resources/images/Launcher.png)
 
 ---
 
 ## Account Manager
 
-![Accounts](docs/images/accounts.png)
+![Account Manager](src/main/resources/images/Account.png)
 
 ---
 
 ## Splash Screen
 
-![Splash](docs/images/splash.png)
+![Splash Screen](src/main/resources/images/Splashscreen.png)
 
 ---
 
 # Features
 
-### Interface
+### Modern Interface
 
-- Modern JavaFX interface
+- Clean JavaFX user interface
 - Minimalist dark theme
 - Responsive layout
-- Clean navigation
+- Lightweight design
 
 ### Authentication
 
-- Microsoft account support
-- Ely.by account support
+- Microsoft account authentication
+- Ely.by account authentication
 - Multiple saved accounts
+- Local account management
 
 ### Launcher
 
@@ -68,88 +69,117 @@ Unlike many launchers, Rocket Client is developed with a focus on keeping the in
 - Built-in news panel
 - Discord Rich Presence
 - Cross-platform support
-- Lightweight architecture
+- Fast startup
+- Performance-focused architecture
 
 ---
 
 # Roadmap
 
-## Current
+## Completed
 
 - [x] JavaFX launcher
-- [x] Custom user interface
+- [x] Custom launcher interface
+- [x] Splash screen
 - [x] Microsoft authentication
 - [x] Ely.by authentication
-- [x] Account manager
-- [x] Version selection
-- [x] News panel
+- [x] Multiple account management
 - [x] Discord Rich Presence
-- [x] Splash screen
+- [x] News panel
+- [x] Minecraft version selection
+
+---
+
+## In Development
+
+- [ ] Improved Microsoft authentication
+- [ ] Faster launcher startup
+- [ ] Automatic Java detection
+- [ ] Automatic Java installation
+- [ ] Improved download manager
+- [ ] Better launcher settings
+- [ ] Better error handling
+- [ ] Crash reporting
+- [ ] General performance improvements
 
 ---
 
 ## Planned
 
-- [ ] Improved Microsoft authentication
-- [ ] Automatic Java detection
-- [ ] Automatic Java installation
-- [ ] Improved download manager
-- [ ] Better launcher settings
-- [ ] Crash reporting
-- [ ] Performance optimizations
-
----
-
-## Future
-
-- [ ] Automatic updates
+- [ ] Automatic launcher updates
 - [ ] Fabric installation
 - [ ] Forge installation
 - [ ] NeoForge installation
 - [ ] Mod management
 - [ ] Instance management
 - [ ] Built-in log viewer
+- [ ] Launcher themes
 - [ ] Localization
-- [ ] Theme customization
+- [ ] Additional quality-of-life improvements
 
 ---
 
 # Repository Notice
 
-This repository may be publicly accessible for transparency, verification, educational reference, or public inspection.
+Rocket Client's source code may be publicly accessible for transparency, verification, educational reference, or public inspection.
 
 Public availability **does not** grant permission to:
 
 - Compile the project
 - Modify the source code
 - Redistribute the project
-- Fork the repository for development
-- Reuse any portion of the code or assets
+- Fork the project for development
+- Reuse code, assets, or resources
 - Create derivative works
+- Reupload any part of Rocket Client
 
-Please refer to the **LICENSE** file for the complete terms.
-
----
-
-# Project Status
-
-Rocket Client is currently in **Beta**.
-
-Development is active and features may change between releases. While the launcher is usable, some functionality is still being refined before the first stable release.
+Please refer to the **LICENSE** file for the complete terms and restrictions.
 
 ---
 
-# Bug Reports
+# Reporting Issues
 
-If you discover a bug or encounter unexpected behavior, please open a GitHub Issue containing:
+If you encounter a bug or unexpected behavior, please open a GitHub Issue including:
 
-- Operating system
 - Rocket Client version
-- Java version (if applicable)
+- Operating system
 - Steps to reproduce
-- Screenshots or logs (if available)
+- Screenshots (if applicable)
+- Crash logs (if available)
 
 Feature suggestions are also welcome.
+
+---
+
+# Frequently Asked Questions
+
+### Is Rocket Client open source?
+
+No.
+
+The repository may be publicly viewable for transparency, but the project is **not open source**. Please refer to the LICENSE file for the permissions and restrictions.
+
+---
+
+### Which operating systems are supported?
+
+- Windows
+- Linux
+
+---
+
+### Which account types are supported?
+
+- Microsoft
+- Ely.by
+
+---
+
+### Is Rocket Client finished?
+
+No.
+
+Rocket Client is currently in **Beta**, and new features, improvements, and fixes are actively being developed.
 
 ---
 
@@ -159,17 +189,19 @@ Rocket Client is distributed under the **Rocket Client License**.
 
 All rights are reserved.
 
-Please read the `LICENSE` file before downloading, using, accessing, or interacting with any part of this project.
+Please read the `LICENSE` file before downloading, viewing, using, or interacting with any part of this project.
 
 ---
 
 <div align="center">
 
-**Rocket Client**
+### Rocket Client
 
 Developed by **Pernoise**
 
 © 2026 Pernoise. All rights reserved.
+
+If you enjoy Rocket Client, consider leaving the repository a ⭐.
 
 </div>
 Join the community:
