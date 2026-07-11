@@ -51,7 +51,7 @@ public class FirstLaunchDialog {
         // Logo
         try {
             Image img = new Image(FirstLaunchDialog.class.getClassLoader()
-                .getResourceAsStream("icons/rocket-launch.png"));
+                .getResourceAsStream("images/icon.png"));
             ImageView iv = new ImageView(img);
             iv.setFitWidth(40);
             iv.setFitHeight(40);

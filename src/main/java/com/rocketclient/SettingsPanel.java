@@ -210,7 +210,7 @@ public class SettingsPanel extends VBox {
         Label version = new Label("Rocket Client — Beta v0.6");
         version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
-        Label desc = new Label("A modern, lightweight Minecraft launcher built with love and... JavaFX. .");
+        Label desc = new Label("A modern, lightweight Minecraft launcher built with love and.. Java");
         desc.setStyle("-fx-text-fill: #444444; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         desc.setWrapText(true);
 
@@ -258,7 +258,7 @@ public class SettingsPanel extends VBox {
         panel.getChildren().addAll(checkUpdateBtn, updateStatus);
 
         panel.getChildren().add(sectionLabel("Credits"));
-        Label credits = new Label("Built by Pernoise\nUI: JavaFX + JetBrains Mono\nAuth: Microsoft OAuth + Ely.by");
+        Label credits = new Label("Built by Pernoise");
         credits.setStyle("-fx-text-fill: #333333; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         panel.getChildren().add(credits);
 

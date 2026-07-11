@@ -18,21 +18,31 @@ public class NewsPanel extends VBox {
 
         VBox cards = new VBox(8);
         cards.getChildren().addAll(
+            newsCard("08/07/2026", "Microsoft login now working via browser OAuth flow."),
+            newsCard("08/07/2026", "New launcher icon."),
+            newsCard("06/07/2026", "Account avatar and username shown in left panel."),
+            newsCard("06/07/2026", "Maximize button added to title bar."),
+            newsCard("05/07/2026", "Discord RPC now working on Windows via named pipes."),
+            newsCard("04/07/2026", "Store button removed."),
+            newsCard("03/07/2026", "Windows installer with desktop shortcut support."),
+            newsCard("03/07/2026", "Custom branded installer via Inno Setup."),
+            newsCard("30/06/2026", "Live launch log window added."),
+            newsCard("30/06/2026", "Memory leak fix, launcher closes when Minecraft exits."),
+            newsCard("28/06/2026", "Custom title bar replacing system default."),
+            newsCard("28/06/2026", "Hardcoded Java paths removed, works with any Java."),
+            newsCard("28/06/2026", "Auto-detects platform for correct JavaFX natives."),
+            newsCard("28/06/2026", "Linux AppImage build available."),
             newsCard("18/05/2026", "Rocket Client is now open for BETA testing."),
             newsCard("18/05/2026", "We want your feedback. Open a ticket on GitHub if you encounter any bugs."),
             newsCard("17/05/2026", "Ely.by authentication fully working."),
-            newsCard("17/05/2026", "Microsoft login pending Mojang approval."),
             newsCard("17/05/2026", "Discord RPC connected."),
             newsCard("17/05/2026", "Fabric loader support added."),
             newsCard("17/05/2026", "Forge 1.8.9 toggle added."),
             newsCard("17/05/2026", "Settings panel live, Java args and RAM allocation."),
-            newsCard("17/05/2026", "Auto update checker added."),
             newsCard("17/05/2026", "Splash screen on launch."),
             newsCard("17/05/2026", "Account switcher with logout support."),
             newsCard("17/05/2026", "Version selector 1.19 to 26.1.2."),
-            newsCard("17/05/2026", "Java path override in settings."),
-            newsCard("17/05/2026", "JetBrains Mono font throughout."),
-            newsCard("17/05/2026", "Linux AppImage packaging in progress.")
+            newsCard("17/05/2026", "Java path override in settings.")
         );
 
         ScrollPane scroll = new ScrollPane(cards);

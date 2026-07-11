@@ -2,26 +2,51 @@ package com.rocketclient;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class MicrosoftAuth {
 
     private static final String CLIENT_ID    = "dc74ccfb-45bd-41c1-b948-1462a516e4c6";
-    private static final String REDIRECT_URI = "https://login.microsoftonline.com/common/oauth2/nativeclient";
+    private static final String REDIRECT_URI = "http://localhost:9999/callback";
     private static final Gson   GSON         = new Gson();
 
     public static AccountManager.Account login(Consumer<String> statusCallback) throws Exception {
         CompletableFuture<String> codeFuture = new CompletableFuture<>();
+
+        HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", 9999), 10);
+        server.setExecutor(Executors.newFixedThreadPool(2));
+        server.createContext("/callback", exchange -> {
+            try {
+                String query = exchange.getRequestURI().getQuery();
+                String code = null;
+                if (query != null) {
+                    for (String param : query.split("&")) {
+                        if (param.startsWith("code=")) {
+                            code = URLDecoder.decode(param.substring(5), "UTF-8");
+                            break;
+                        }
+                    }
+                }
+                String html = "<html><body style='background:#080404;color:#fff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;margin:0'><h2>Login successful! You can close this window.</h2></body></html>";
+                byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "text/html");
+                exchange.sendResponseHeaders(200, bytes.length);
+                exchange.getResponseBody().write(bytes);
+                exchange.getResponseBody().close();
+                if (code != null) codeFuture.complete(code);
+                else codeFuture.completeExceptionally(new Exception("No code received"));
+            } catch (Exception e) {
+                codeFuture.completeExceptionally(e);
+            }
+        });
+        server.start();
 
         String authUrl =
             "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize" +
@@ -31,55 +56,16 @@ public class MicrosoftAuth {
             "&scope=" + URLEncoder.encode("XboxLive.signin offline_access", "UTF-8") +
             "&prompt=select_account";
 
-        System.setProperty("javax.net.ssl.trustStore", System.getProperty("java.home") + "\\lib\\security\\cacerts"); Platform.runLater(() -> {
-            Stage browserStage = new Stage();
-            browserStage.initModality(Modality.APPLICATION_MODAL);
-            browserStage.setTitle("Login with Microsoft");
-            browserStage.setWidth(500);
-            browserStage.setHeight(650);
+        BrowserUtil.open(authUrl);
+        statusCallback.accept("Complete login in your browser, then return here.");
 
-            WebView webView = new WebView();
-            WebEngine engine = webView.getEngine(); engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        String code;
+        try {
+            code = codeFuture.get(5, TimeUnit.MINUTES);
+        } finally {
+            server.stop(0);
+        }
 
-            engine.locationProperty().addListener((obs, oldUrl, newUrl) -> {
-                if (newUrl != null && newUrl.startsWith(REDIRECT_URI)) {
-                    try {
-                        String query = new URL(newUrl).getQuery();
-                        if (query != null) {
-                            for (String param : query.split("&")) {
-                                if (param.startsWith("code=")) {
-                                    String code = URLDecoder.decode(param.substring(5), "UTF-8");
-                                    engine.load("about:blank");
-                                    codeFuture.complete(code);
-                                    browserStage.close();
-                                    break;
-                                }
-                            }
-                        }
-                        if (newUrl.contains("error=")) {
-                            codeFuture.completeExceptionally(new Exception("Login cancelled or failed"));
-                            browserStage.close();
-                        }
-                    } catch (Exception e) {
-                        codeFuture.completeExceptionally(e);
-                        browserStage.close();
-                    }
-                }
-            });
-
-            browserStage.setOnCloseRequest(e -> {
-                if (!codeFuture.isDone()) {
-                    codeFuture.completeExceptionally(new Exception("Login window closed"));
-                }
-            });
-
-            engine.load(authUrl);
-            browserStage.setScene(new Scene(webView));
-            browserStage.show();
-        });
-
-        statusCallback.accept("Complete login in the browser window...");
-        String code = codeFuture.get();
         statusCallback.accept("Authenticating...");
         return exchangeCodeForAccount(code);
     }

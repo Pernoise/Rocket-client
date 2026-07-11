@@ -39,7 +39,7 @@ public class SplashScreen {
 
         ImageView logo = new ImageView();
         try {
-            Image img = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
+            Image img = new Image(getClass().getClassLoader().getResourceAsStream("Images/icon.png"));
             logo.setImage(img);
             logo.setFitWidth(48);
             logo.setFitHeight(48);
@@ -51,7 +51,7 @@ public class SplashScreen {
         Label title = new Label("Rocket Client");
         title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 22; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
-        Label version = new Label("Beta v0.5");
+        Label version = new Label("Beta v0.6");
         version.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
         ProgressBar progressBar = new ProgressBar(0);

@@ -79,7 +79,7 @@ public class AuthPanel extends VBox {
         VBox panel = new VBox(16);
         panel.setPadding(new Insets(16, 0, 0, 0));
 
-        Label info = new Label("Click Login to get a code, then enter it at microsoft.com/devicelogin");
+        Label info = new Label("Sign in with your Minecraft account");
         info.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         info.setWrapText(true);
 
@@ -87,14 +87,14 @@ public class AuthPanel extends VBox {
         codeLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 28; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold;");
         codeLabel.setVisible(false);
 
-        Button copyBtn = new Button("Copy Code");
+        Button copyBtn = new Button("Login with Microsoft");
         copyBtn.setStyle("-fx-background-color: #1a1a1a; -fx-text-fill: #666666; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 11; -fx-cursor: hand; -fx-padding: 6 12; -fx-border-color: #2a2a2a; -fx-border-radius: 6; -fx-background-radius: 6;");
         copyBtn.setVisible(false);
         copyBtn.setOnAction(e -> {
             javafx.scene.input.ClipboardContent cc = new javafx.scene.input.ClipboardContent();
             cc.putString(codeLabel.getText());
             javafx.scene.input.Clipboard.getSystemClipboard().setContent(cc);
-            copyBtn.setText("Copied!");
+            copyBtn.setText("Opened!");
         });
 
         Label status = new Label();
@@ -106,7 +106,7 @@ public class AuthPanel extends VBox {
         loginBtn.setMaxWidth(Double.MAX_VALUE);
         loginBtn.setOnAction(e -> {
             loginBtn.setDisable(true);
-            loginBtn.setText("Getting code...");
+            loginBtn.setText("authenticating ");
             status.setText("");
             new Thread(() -> {
                 try {

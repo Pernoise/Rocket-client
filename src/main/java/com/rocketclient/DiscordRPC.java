@@ -42,7 +42,7 @@ public class DiscordRPC {
                 readResponse();
                 running = true;
                 System.out.println("Discord RPC connected.");
-                setPresence("In the launcher", "Rocket Client Beta v0.5");
+                setPresence("In the launcher", "Rocket Client Beta v0.6");
 
                 while (running) Thread.sleep(15000);
 
