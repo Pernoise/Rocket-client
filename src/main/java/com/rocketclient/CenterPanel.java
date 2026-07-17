@@ -219,7 +219,7 @@ public class CenterPanel extends VBox {
                 if (useFabric) {
                     MinecraftLauncher.launch(version, account, settingsManager, logWindow::appendLog);
                 } else {
-                    MinecraftLauncher.launch("1.8.9", account, settingsManager, logWindow::appendLog);
+                    ForgeLauncher.launch(account, settingsManager, logWindow::appendLog);
                 }
                 javafx.application.Platform.runLater(() -> {
                     playBtn.setText(">   Play  [" + version + "]");

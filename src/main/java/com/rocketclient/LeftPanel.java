@@ -15,6 +15,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class LeftPanel extends VBox {
 
     private final AccountManager accountManager;
@@ -34,6 +38,8 @@ public class LeftPanel extends VBox {
         VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true,  null,  false, false);
         VBox account  = createIcon("icons/user.png",          "Account",       false, null,  true,  false);
         VBox settings = createIcon("icons/gear.png",          "Settings",      false, null,  false, true);
+        VBox launcherFolder = createIcon("icons/folder.png",  "Open Launcher Folder", false, null, false, false);
+        launcherFolder.setOnMouseClicked(e -> openLauncherFolder());
 
         VBox spacer = new VBox();
         VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -43,7 +49,7 @@ public class LeftPanel extends VBox {
 
         VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
         VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
-        getChildren().addAll(logo, account, settings, spacer, accountWidget, discord, website);
+        getChildren().addAll(logo, account, settings, launcherFolder, spacer, accountWidget, discord, website);
 
     }
 
@@ -188,5 +194,27 @@ public class LeftPanel extends VBox {
         popup.setScene(scene);
         popup.centerOnScreen();
         popup.showAndWait();
+    }
+
+    private void openLauncherFolder() {
+        try {
+            Path path = Paths.get(System.getProperty("user.home"), ".rocketclient");
+            if (Files.exists(path) == false) {
+                Files.createDirectories(path);
+            }
+
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb;
+            if (os.contains("win")) {
+                pb = new ProcessBuilder("explorer", path.toString());
+            } else if (os.contains("mac")) {
+                pb = new ProcessBuilder("open", path.toString());
+            } else {
+                pb = new ProcessBuilder("xdg-open", path.toString());
+            }
+            pb.start();
+        } catch (Exception e) {
+            System.out.println("Could not open launcher folder: " + e.getMessage());
+        }
     }
 }

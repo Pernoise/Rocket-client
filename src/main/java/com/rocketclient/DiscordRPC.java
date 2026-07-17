@@ -119,7 +119,7 @@ public class DiscordRPC {
     }
 
     public static void updatePlaying(String version) {
-        setPresence("Playing Minecraft " + version, "Rocket Client Beta v0.4");
+        setPresence("Playing Minecraft " + version, "Rocket Client Beta v0.6");
     }
 
     public static void stop() {
