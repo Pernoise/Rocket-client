@@ -124,7 +124,7 @@ public class Main extends Application {
         return "-fx-background-color: #3a0000; -fx-text-fill: #ff4444; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { try { java.nio.file.Path logDir = java.nio.file.Paths.get(System.getProperty("user.home"), ".rocketclient", "logs"); java.nio.file.Files.createDirectories(logDir); java.io.PrintStream logStream = new java.io.PrintStream(new java.io.FileOutputStream(logDir.resolve("launcher-latest.log").toFile(), false)); System.setOut(logStream); System.setErr(logStream); } catch (Exception e) {} 
         launch(args);
     }
 }

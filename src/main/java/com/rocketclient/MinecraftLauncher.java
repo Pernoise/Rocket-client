@@ -448,7 +448,7 @@ public class MinecraftLauncher {
 
             log.accept("Starting Minecraft process...");
             ProcessBuilder pb = new ProcessBuilder(cmd);
-            pb.redirectErrorStream(true);
+            java.nio.file.Files.createDirectories(MC_DIR.resolve("logs")); pb.redirectErrorStream(true); pb.redirectOutput(MC_DIR.resolve("logs").resolve("minecraft-latest.log").toFile());
             Process process = pb.start();
             log.accept("Minecraft launched!");
 
