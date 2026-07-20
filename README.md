@@ -92,14 +92,13 @@ Rocket Client is currently in **Beta** and is under active development.
 
 ## In Development
 
-- [ ] Improved Microsoft authentication
-- [ ] Faster launcher startup
-- [ ] Automatic Java detection
-- [ ] Automatic Java installation
+- [x] Improved Microsoft authentication
+- [x] Faster launcher startup
+- [x] Automatic Java installation
 - [ ] Improved download manager
 - [ ] Better launcher settings
 - [ ] Better error handling
-- [ ] Crash reporting
+- [x] Crash reporting
 - [ ] General performance improvements
 
 ---
