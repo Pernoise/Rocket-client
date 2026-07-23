@@ -22,7 +22,6 @@ public class ForgeLauncher {
 
     private static final String FORGE_VERSION   = "1.8.9-11.15.1.2318-1.8.9";
     private static final String FORGE_INSTALLER = "https://maven.minecraftforge.net/net/minecraftforge/forge/1.8.9-11.15.1.2318-1.8.9/forge-1.8.9-11.15.1.2318-1.8.9-installer.jar";
-    private static final String OPTIFINE_URL    = "https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_H8.jar";
     private static final String OPTIFINE_FILE   = "OptiFine_1.8.9_HD_U_H8.jar";
 
     public static void launch(AccountManager.Account account, SettingsManager settings, Consumer<String> log) throws Exception {
@@ -41,7 +40,7 @@ public class ForgeLauncher {
             log.accept("Downloading Forge installer...");
             Path installer = forgeDir.resolve("forge-installer.jar");
             downloadFile(FORGE_INSTALLER, installer, log);
-            log.accept("Extracting Forge profile...");
+            log.accept("Extracting Forge...");
             extractFromZip(installer, "install_profile.json", forgeJson);
             extractFromZip(installer, "forge-1.8.9-11.15.1.2318-1.8.9-universal.jar", forgeJar);
             Files.deleteIfExists(installer);
@@ -53,26 +52,28 @@ public class ForgeLauncher {
         log.accept("Downloading vanilla 1.8.9 JAR...");
         Path vanillaJar = downloadVanillaJar(log);
 
-        log.accept("Downloading Forge libraries...");
-        List<Path> libs = downloadForgeLibraries(forgeJson, log);
+        log.accept("Downloading vanilla libraries...");
+        List<Path> libs = downloadVanillaLibraries(log);
 
-        log.accept("Downloading assets...");
-        downloadAssets(log);
+        log.accept("Downloading Forge libraries...");
+        libs.addAll(downloadForgeLibraries(forgeJson, log));
 
         log.accept("Downloading required libraries...");
         downloadRequiredLibs(log);
 
+        log.accept("Downloading assets...");
+        downloadAssets(log);
+
         log.accept("Checking OptiFine...");
         Path optifine = MODS_DIR.resolve(OPTIFINE_FILE);
         if (!Files.exists(optifine)) {
-            log.accept("Downloading OptiFine...");
-            downloadFile(OPTIFINE_URL, optifine, log);
+            log.accept("OptiFine not found. Please download OptiFine_1.8.9_HD_U_H8.jar and place it in " + MODS_DIR);
         } else {
-            log.accept("OptiFine already installed.");
+            log.accept("OptiFine found.");
         }
 
-        log.accept("Launching Minecraft 1.8.9 Forge...");
-        startForge(account, settings, vanillaJar, forgeJar, forgeJson, libs, log);
+        log.accept("Launching Minecraft 1.8.9 Forge+OptiFine...");
+        startForge(account, settings, vanillaJar, forgeJar, libs, log);
     }
 
     private static void extractFromZip(Path zip, String entryName, Path dest) throws Exception {
@@ -86,6 +87,122 @@ public class ForgeLauncher {
                 zis.closeEntry();
             }
         }
+    }
+
+    private static Path downloadVanillaJar(Consumer<String> log) throws Exception {
+        Path jar = VERSIONS.resolve("1.8.9").resolve("1.8.9.jar");
+        if (Files.exists(jar)) return jar;
+        Files.createDirectories(jar.getParent());
+        JsonObject manifest = fetchJson("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+        JsonArray versions = manifest.getAsJsonArray("versions");
+        for (int i = 0; i < versions.size(); i++) {
+            JsonObject vo = versions.get(i).getAsJsonObject();
+            if ("1.8.9".equals(vo.get("id").getAsString())) {
+                JsonObject vJson = fetchJson(vo.get("url").getAsString());
+                String url = vJson.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
+                downloadFile(url, jar, log);
+                return jar;
+            }
+        }
+        throw new Exception("1.8.9 not found");
+    }
+
+    private static List<Path> downloadVanillaLibraries(Consumer<String> log) throws Exception {
+        List<Path> paths = new ArrayList<>();
+        JsonObject manifest = fetchJson("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+        JsonArray versions = manifest.getAsJsonArray("versions");
+        for (int i = 0; i < versions.size(); i++) {
+            JsonObject vo = versions.get(i).getAsJsonObject();
+            if ("1.8.9".equals(vo.get("id").getAsString())) {
+                JsonObject vJson = fetchJson(vo.get("url").getAsString());
+                JsonArray libs = vJson.getAsJsonArray("libraries");
+                for (int j = 0; j < libs.size(); j++) {
+                    JsonObject lo = libs.get(j).getAsJsonObject();
+                    if (!lo.has("downloads")) continue;
+                    JsonObject downloads = lo.getAsJsonObject("downloads");
+                    if (!downloads.has("artifact")) continue;
+                    JsonObject artifact = downloads.getAsJsonObject("artifact");
+                    String path = artifact.get("path").getAsString();
+                    String url  = artifact.get("url").getAsString();
+                    if (path.contains("natives")) continue;
+                    Path dest = LIBRARIES.resolve(path);
+                    if (!Files.exists(dest)) {
+                        Files.createDirectories(dest.getParent());
+                        try { downloadFile(url, dest, log); }
+                        catch (Exception e) { log.accept("Skipping: " + dest.getFileName()); }
+                    }
+                    paths.add(dest);
+                }
+
+                Path nativesDir = MC_DIR.resolve("natives");
+                Files.createDirectories(nativesDir);
+                for (int j = 0; j < libs.size(); j++) {
+                    JsonObject lo = libs.get(j).getAsJsonObject();
+                    if (!lo.has("downloads")) continue;
+                    JsonObject downloads = lo.getAsJsonObject("downloads");
+                    if (!downloads.has("classifiers")) continue;
+                    JsonObject classifiers = downloads.getAsJsonObject("classifiers");
+                    String key = "natives-windows";
+                    if (!classifiers.has(key)) continue;
+                    JsonObject native_ = classifiers.getAsJsonObject(key);
+                    String path = native_.get("path").getAsString();
+                    String url  = native_.get("url").getAsString();
+                    Path dest = LIBRARIES.resolve(path);
+                    if (!Files.exists(dest)) {
+                        Files.createDirectories(dest.getParent());
+                        try { downloadFile(url, dest, log); }
+                        catch (Exception e) { log.accept("Skipping native: " + dest.getFileName()); }
+                    }
+                    if (Files.exists(dest)) {
+                        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(dest)))) {
+                            ZipEntry entry;
+                            while ((entry = zis.getNextEntry()) != null) {
+                                if (!entry.isDirectory() && (entry.getName().endsWith(".dll") || entry.getName().endsWith(".so") || entry.getName().endsWith(".dylib"))) {
+                                    Files.copy(zis, nativesDir.resolve(entry.getName()), StandardCopyOption.REPLACE_EXISTING);
+                                }
+                                zis.closeEntry();
+                            }
+                        }
+                    }
+                }
+                return paths;
+            }
+        }
+        return paths;
+    }
+
+    private static List<Path> downloadForgeLibraries(Path forgeJson, Consumer<String> log) throws Exception {
+        List<Path> paths = new ArrayList<>();
+        if (!Files.exists(forgeJson)) return paths;
+        JsonObject profile = GSON.fromJson(new String(Files.readAllBytes(forgeJson)), JsonObject.class);
+        JsonObject versionInfo = profile.has("versionInfo") ? profile.getAsJsonObject("versionInfo") : profile;
+        if (!versionInfo.has("libraries")) return paths;
+        JsonArray libs = versionInfo.getAsJsonArray("libraries");
+        for (int i = 0; i < libs.size(); i++) {
+            JsonObject lo = libs.get(i).getAsJsonObject();
+            String name = lo.get("name").getAsString();
+            String[] parts = name.split(":");
+            if (parts.length < 3) continue;
+            String group    = parts[0].replace(".", "/");
+            String artifact = parts[1];
+            String version  = parts[2];
+            String fileName = artifact + "-" + version + ".jar";
+            String relPath  = group + "/" + artifact + "/" + version + "/" + fileName;
+            if (relPath.contains("natives")) continue;
+            Path dest = LIBRARIES.resolve(relPath);
+            if (!Files.exists(dest)) {
+                Files.createDirectories(dest.getParent());
+                String url = lo.has("url") ? lo.get("url").getAsString() + relPath
+                    : "https://libraries.minecraft.net/" + relPath;
+                try { downloadFile(url, dest, log); }
+                catch (Exception e) {
+                    try { downloadFile("https://maven.minecraftforge.net/" + relPath, dest, log); }
+                    catch (Exception e2) { log.accept("Skipping: " + fileName); continue; }
+                }
+            }
+            paths.add(dest);
+        }
+        return paths;
     }
 
     private static void downloadRequiredLibs(Consumer<String> log) throws Exception {
@@ -103,75 +220,23 @@ public class ForgeLauncher {
             "com/google/guava/guava/17.0/guava-17.0.jar", log);
         downloadLib("https://libraries.minecraft.net/com/mojang/authlib/1.5.21/authlib-1.5.21.jar",
             "com/mojang/authlib/1.5.21/authlib-1.5.21.jar", log);
+        downloadLib("https://libraries.minecraft.net/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar",
+            "com/google/code/gson/gson/2.2.4/gson-2.2.4.jar", log);
     }
 
     private static void downloadLib(String url, String path, Consumer<String> log) throws Exception {
         Path dest = LIBRARIES.resolve(path);
         if (Files.exists(dest)) return;
         Files.createDirectories(dest.getParent());
-        try {
-            downloadFile(url, dest, log);
-        } catch (Exception e) {
-            log.accept("Could not download: " + dest.getFileName());
-        }
-    }
-
-    private static Path downloadVanillaJar(Consumer<String> log) throws Exception {
-        Path jar = VERSIONS.resolve("1.8.9").resolve("1.8.9.jar");
-        if (Files.exists(jar)) return jar;
-        Files.createDirectories(jar.getParent());
-        JsonObject manifest = fetchJson("https://launchermeta.mojang.com/mc/game/version_manifest.json");
-        JsonArray versions = manifest.getAsJsonArray("versions");
-        for (var v : versions) {
-            JsonObject vo = v.getAsJsonObject();
-            if ("1.8.9".equals(vo.get("id").getAsString())) {
-                JsonObject vJson = fetchJson(vo.get("url").getAsString());
-                String url = vJson.getAsJsonObject("downloads").getAsJsonObject("client").get("url").getAsString();
-                downloadFile(url, jar, log);
-                return jar;
-            }
-        }
-        throw new Exception("1.8.9 not found");
-    }
-
-    private static List<Path> downloadForgeLibraries(Path forgeJson, Consumer<String> log) throws Exception {
-        List<Path> paths = new ArrayList<>();
-        if (!Files.exists(forgeJson)) return paths;
-        JsonObject profile = GSON.fromJson(new String(Files.readAllBytes(forgeJson)), JsonObject.class);
-        JsonObject versionInfo = profile.has("versionInfo") ? profile.getAsJsonObject("versionInfo") : profile;
-        if (!versionInfo.has("libraries")) return paths;
-        JsonArray libs = versionInfo.getAsJsonArray("libraries");
-        for (var lib : libs) {
-            JsonObject lo = lib.getAsJsonObject();
-            String name = lo.get("name").getAsString();
-            String[] parts = name.split(":");
-            if (parts.length < 3) continue;
-            String group    = parts[0].replace(".", "/");
-            String artifact = parts[1];
-            String version  = parts[2];
-            String fileName = artifact + "-" + version + ".jar";
-            String relPath  = group + "/" + artifact + "/" + version + "/" + fileName;
-            Path dest = LIBRARIES.resolve(relPath);
-            if (!Files.exists(dest)) {
-                Files.createDirectories(dest.getParent());
-                String url = lo.has("url") ? lo.get("url").getAsString() + relPath
-                    : "https://libraries.minecraft.net/" + relPath;
-                try { downloadFile(url, dest, log); }
-                catch (Exception e) {
-                    try { downloadFile("https://maven.minecraftforge.net/" + relPath, dest, log); }
-                    catch (Exception e2) { log.accept("Skipping: " + fileName); }
-                }
-            }
-            paths.add(dest);
-        }
-        return paths;
+        try { downloadFile(url, dest, log); }
+        catch (Exception e) { log.accept("Could not download: " + dest.getFileName()); }
     }
 
     private static void downloadAssets(Consumer<String> log) throws Exception {
         JsonObject manifest = fetchJson("https://launchermeta.mojang.com/mc/game/version_manifest.json");
         JsonArray versions = manifest.getAsJsonArray("versions");
-        for (var v : versions) {
-            JsonObject vo = v.getAsJsonObject();
+        for (int i = 0; i < versions.size(); i++) {
+            JsonObject vo = versions.get(i).getAsJsonObject();
             if ("1.8.9".equals(vo.get("id").getAsString())) {
                 JsonObject vJson = fetchJson(vo.get("url").getAsString());
                 JsonObject assetIndex = vJson.getAsJsonObject("assetIndex");
@@ -184,7 +249,7 @@ public class ForgeLauncher {
                 }
                 JsonObject objects = GSON.fromJson(new String(Files.readAllBytes(indexFile)), JsonObject.class).getAsJsonObject("objects");
                 int total = objects.entrySet().size(), count = 0;
-                for (var entry : objects.entrySet()) {
+                for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry : objects.entrySet()) {
                     String hash = entry.getValue().getAsJsonObject().get("hash").getAsString();
                     String prefix = hash.substring(0, 2);
                     Path dest = ASSETS.resolve("objects").resolve(prefix).resolve(hash);
@@ -201,7 +266,7 @@ public class ForgeLauncher {
     }
 
     private static void startForge(AccountManager.Account account, SettingsManager settings,
-        Path vanillaJar, Path forgeJar, Path forgeJson, List<Path> libs, Consumer<String> log) throws Exception {
+        Path vanillaJar, Path forgeJar, List<Path> libs, Consumer<String> log) throws Exception {
 
         StringBuilder cp = new StringBuilder();
         for (Path lib : libs) {
@@ -215,7 +280,8 @@ public class ForgeLauncher {
             "org/apache/logging/log4j/log4j-core/2.0-beta9/log4j-core-2.0-beta9.jar",
             "org/ow2/asm/asm-all/5.0.3/asm-all-5.0.3.jar",
             "com/google/guava/guava/17.0/guava-17.0.jar",
-            "com/mojang/authlib/1.5.21/authlib-1.5.21.jar"
+            "com/mojang/authlib/1.5.21/authlib-1.5.21.jar",
+            "com/google/code/gson/gson/2.2.4/gson-2.2.4.jar"
         };
         for (String rel : requiredLibs) {
             Path p = LIBRARIES.resolve(rel);
@@ -225,18 +291,19 @@ public class ForgeLauncher {
         if (Files.exists(forgeJar)) cp.append(forgeJar.toAbsolutePath()).append(File.pathSeparator);
         cp.append(vanillaJar.toAbsolutePath());
 
+        Path nativesDir = MC_DIR.resolve("natives");
+        Files.createDirectories(nativesDir);
+
         String javaExec;
-        try {
-            javaExec = JavaManager.getJavaForVersion("1.8.9", log);
-        } catch (Exception e) {
-            javaExec = "java";
-        }
+        try { javaExec = JavaManager.getJavaForVersion("1.8.9", log); }
+        catch (Exception e) { javaExec = "java"; }
 
         List<String> cmd = new ArrayList<>();
         cmd.add(javaExec);
         cmd.add("-Xmx" + settings.ramMb + "M");
         cmd.add("-Xms512M");
-        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
+        cmd.add("-Djava.library.path=" + nativesDir.toAbsolutePath());
+        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); cmd.add("-Dorg.lwjgl.opengl.Display.allowSoftwareOpenGL=true");
         cmd.add("-Dfml.ignorePatchDiscrepancies=true");
 
         if (settings.javaArgs != null && !settings.javaArgs.isEmpty()) {
@@ -256,8 +323,6 @@ public class ForgeLauncher {
         cmd.add("--assetIndex");  cmd.add("1.8");
         cmd.add("--userType");    cmd.add(account.type.equals("microsoft") ? "msa" : "legacy");
         cmd.add("--tweakClass");  cmd.add("net.minecraftforge.fml.common.launcher.FMLTweaker");
-
-        log.accept("Command: " + String.join(" ", cmd));
 
         Files.createDirectories(MC_DIR.resolve("logs"));
         ProcessBuilder pb = new ProcessBuilder(cmd);
