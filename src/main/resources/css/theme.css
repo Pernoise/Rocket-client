@@ -1,0 +1,80 @@
+/* Rocket Client - dark theme overrides for default JavaFX controls */
+
+/* ===== Scrollbars (version list dropdown, etc.) ===== */
+.rocket-scroll {
+    -fx-background-color: transparent;
+}
+
+.rocket-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.rocket-scroll .scroll-bar:vertical,
+.rocket-scroll .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+    -fx-pref-height: 8;
+}
+
+.rocket-scroll .scroll-bar:vertical .track,
+.rocket-scroll .scroll-bar:horizontal .track {
+    -fx-background-color: #141414;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+}
+
+.rocket-scroll .scroll-bar:vertical .thumb,
+.rocket-scroll .scroll-bar:horizontal .thumb {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 6;
+}
+
+.rocket-scroll .scroll-bar:vertical .thumb:hover,
+.rocket-scroll .scroll-bar:horizontal .thumb:hover,
+.rocket-scroll .scroll-bar:vertical .thumb:pressed,
+.rocket-scroll .scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: #3a3a3a;
+}
+
+.rocket-scroll .scroll-bar .increment-button,
+.rocket-scroll .scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.rocket-scroll .scroll-bar .increment-arrow,
+.rocket-scroll .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+
+.rocket-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+/* ===== Sliders (RAM allocation, etc.) ===== */
+.rocket-slider .track {
+    -fx-background-color: #141414;
+    -fx-background-radius: 6;
+    -fx-border-color: #222222;
+    -fx-border-radius: 6;
+    -fx-pref-height: 6;
+}
+
+.rocket-slider .axis {
+    -fx-tick-label-fill: #ffffff;
+}
+
+.rocket-slider .thumb {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 50%;
+    -fx-pref-width: 14;
+    -fx-pref-height: 14;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.25), 6, 0.3, 0, 0);
+}
+
+.rocket-slider .thumb:hover,
+.rocket-slider .thumb:pressed {
+    -fx-background-color: #e0e0e0;
+}

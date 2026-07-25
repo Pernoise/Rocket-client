@@ -35,7 +35,7 @@ public class Main extends Application {
             DiscordRPC.start(settingsManager);
 
             Label titleLabel = new Label("Rocket Client  BETA");
-            titleLabel.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+            titleLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
             Button minimizeBtn = new Button("-");
             minimizeBtn.setStyle(titleBtnStyle());
@@ -88,12 +88,13 @@ public class Main extends Application {
             wrapper.setStyle("-fx-background-color: #080404; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
 
             stage.initStyle(StageStyle.TRANSPARENT);
-            Scene scene = new Scene(wrapper, 900, 540);
+            Scene scene = new Scene(wrapper, 1200, 700);
             scene.setFill(Color.TRANSPARENT);
+            scene.getStylesheets().add(getClass().getClassLoader().getResource("css/theme.css").toExternalForm());
             stage.setScene(scene);
             stage.setResizable(true);
-            stage.setMinWidth(900);
-            stage.setMinHeight(540);
+            stage.setMinWidth(1200);
+            stage.setMinHeight(700);
 
             try {
                 Image icon = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
@@ -113,11 +114,11 @@ public class Main extends Application {
     }
 
     private String titleBtnStyle() {
-        return "-fx-background-color: transparent; -fx-text-fill: #333333; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
+        return "-fx-background-color: transparent; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
     }
 
     private String titleBtnHoverStyle() {
-        return "-fx-background-color: #1a1a1a; -fx-text-fill: #888888; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
+        return "-fx-background-color: #1a1a1a; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
     }
 
     private String closeBtnHoverStyle() {

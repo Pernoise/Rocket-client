@@ -14,7 +14,7 @@ public class NewsPanel extends VBox {
         setSpacing(10);
 
         Label title = new Label("NEWS");
-        title.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
         VBox cards = new VBox(8);
         cards.getChildren().addAll(
@@ -46,6 +46,7 @@ public class NewsPanel extends VBox {
         );
 
         ScrollPane scroll = new ScrollPane(cards);
+        scroll.getStyleClass().add("rocket-scroll");
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -60,10 +61,10 @@ public class NewsPanel extends VBox {
         card.setStyle("-fx-border-color: #161616; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 10;");
 
         Label dateLabel = new Label(date);
-        dateLabel.setStyle("-fx-text-fill: #2e2e2e; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
+        dateLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
         Label textLabel = new Label(text);
-        textLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        textLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         textLabel.setWrapText(true);
 
         card.getChildren().addAll(dateLabel, textLabel);

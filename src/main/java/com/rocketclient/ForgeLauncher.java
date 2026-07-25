@@ -303,7 +303,7 @@ public class ForgeLauncher {
         cmd.add("-Xmx" + settings.ramMb + "M");
         cmd.add("-Xms512M");
         cmd.add("-Djava.library.path=" + nativesDir.toAbsolutePath());
-        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); cmd.add("-Dorg.lwjgl.opengl.Display.allowSoftwareOpenGL=true");
+        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); 
         cmd.add("-Dfml.ignorePatchDiscrepancies=true");
 
         if (settings.javaArgs != null && !settings.javaArgs.isEmpty()) {

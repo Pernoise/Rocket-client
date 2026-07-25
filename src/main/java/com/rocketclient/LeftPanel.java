@@ -30,7 +30,7 @@ public class LeftPanel extends VBox {
         this.settingsManager = settingsManager;
 
         setPrefWidth(56);
-        setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 0 1 0 0;");
+        setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 0 1 0 0; -fx-background-radius: 0 0 0 12; -fx-border-radius: 0 0 0 12;");
         setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(14, 0, 14, 0));
         setSpacing(6);
@@ -67,7 +67,7 @@ public class LeftPanel extends VBox {
             iv.setPreserveRatio(true);
 
             Label nameLabel = new Label(acc.username);
-            nameLabel.setStyle("-fx-text-fill: #444444; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+            nameLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
             Platform.runLater(() -> accountWidget.getChildren().addAll(iv, nameLabel));
         } catch (Exception e) {
@@ -124,17 +124,17 @@ public class LeftPanel extends VBox {
 
         javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
         closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         );
         closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #888888; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         ));
         closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         ));
@@ -166,17 +166,17 @@ public class LeftPanel extends VBox {
 
         javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
         closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         );
         closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #888888; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         ));
         closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #444444; " +
+            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
             "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
             "-fx-padding: 2 6;"
         ));

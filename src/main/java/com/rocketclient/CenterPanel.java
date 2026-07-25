@@ -17,6 +17,8 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -39,10 +41,10 @@ public class CenterPanel extends VBox {
         name.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 28; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
         Label tagline = new Label("A Minecraft performance-focused client - BETA");
-        tagline.setStyle("-fx-text-fill: #2e2e2e; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        tagline.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
         Label quote = new Label(loadRandomQuote());
-        quote.setStyle("-fx-text-fill: #383838; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-font-style: italic; -fx-font-weight: bold;");
+        quote.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-font-style: italic; -fx-font-weight: bold;");
         quote.setWrapText(true);
         quote.setMaxWidth(420);
         quote.setAlignment(Pos.CENTER);
@@ -58,51 +60,27 @@ public class CenterPanel extends VBox {
 
         Button loaderBtn = new Button();
         loaderBtn.setGraphic(loaderIcon);
-        loaderBtn.setStyle(
-            "-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; " +
-            "-fx-border-width: 1 0 1 1; " +
-            "-fx-border-radius: 8 0 0 8; -fx-background-radius: 8 0 0 8; " +
-            "-fx-cursor: hand; -fx-padding: 14 10;"
-        );
+        loaderBtn.setStyle(loaderBtnStyle());
+        loaderBtn.setOnMouseEntered(e -> loaderBtn.setStyle(loaderBtnHoverStyle()));
+        loaderBtn.setOnMouseExited(e -> loaderBtn.setStyle(loaderBtnStyle()));
         loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
 
         Button playBtn = new Button(">   Play  [" + currentVersion + "]");
-        playBtn.setStyle(
-            "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
-            "-fx-border-color: #1a1a1a; -fx-border-width: 1 0 1 0; " +
-            "-fx-background-radius: 0; -fx-border-radius: 0; " +
-            "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;"
-        );
+        playBtn.setStyle(playBtnStyle());
         playBtn.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(playBtn, Priority.ALWAYS);
 
-        playBtn.setOnMouseEntered(e -> playBtn.setStyle(
-            "-fx-background-color: #161616; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
-            "-fx-border-color: #1a1a1a; -fx-border-width: 1 0 1 0; " +
-            "-fx-background-radius: 0; -fx-border-radius: 0; " +
-            "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;"
-        ));
-        playBtn.setOnMouseExited(e -> playBtn.setStyle(
-            "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
-            "-fx-border-color: #1a1a1a; -fx-border-width: 1 0 1 0; " +
-            "-fx-background-radius: 0; -fx-border-radius: 0; " +
-            "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;"
-        ));
+        playBtn.setOnMouseEntered(e -> playBtn.setStyle(playBtnHoverStyle()));
+        playBtn.setOnMouseExited(e -> playBtn.setStyle(playBtnStyle()));
 
         Button versionBtn = new Button("v");
-        versionBtn.setStyle(
-            "-fx-background-color: #0f0f0f; -fx-text-fill: #555555; " +
-            "-fx-font-size: 13; -fx-font-weight: bold; " +
-            "-fx-border-color: #1a1a1a; -fx-border-width: 1 1 1 0; " +
-            "-fx-border-radius: 0 8 8 0; -fx-background-radius: 0 8 8 0; " +
-            "-fx-cursor: hand; -fx-min-width: 40; -fx-padding: 16 10;"
-        );
+        versionBtn.setStyle(versionBtnStyle());
+        versionBtn.setOnMouseEntered(e -> versionBtn.setStyle(versionBtnHoverStyle()));
+        versionBtn.setOnMouseExited(e -> versionBtn.setStyle(versionBtnStyle()));
 
-        HBox playRow = new HBox(0, loaderBtn, playBtn, versionBtn);
+        HBox playRow = new HBox(8, loaderBtn, playBtn, versionBtn);
         playRow.setMaxWidth(Double.MAX_VALUE);
+        playRow.setAlignment(Pos.CENTER);
 
         VBox versionList = new VBox(2);
         versionList.setStyle("-fx-background-color: #0d0d0d;");
@@ -118,6 +96,7 @@ public class CenterPanel extends VBox {
         };
 
         ScrollPane scrollPane = new ScrollPane(versionList);
+        scrollPane.getStyleClass().add("rocket-scroll");
         scrollPane.setMaxHeight(160);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background: #0d0d0d; -fx-background-color: #0d0d0d; -fx-border-color: #1a1a1a; -fx-border-radius: 7; -fx-background-radius: 7;");
@@ -126,10 +105,10 @@ public class CenterPanel extends VBox {
 
         for (String v : versions) {
             Label vLabel = new Label(v);
-            vLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;");
+            vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;");
             vLabel.setMaxWidth(Double.MAX_VALUE);
-            vLabel.setOnMouseEntered(e -> vLabel.setStyle("-fx-text-fill: #888888; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10; -fx-background-color: #161616; -fx-background-radius: 5;"));
-            vLabel.setOnMouseExited(e  -> vLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;"));
+            vLabel.setOnMouseEntered(e -> vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10; -fx-background-color: #161616; -fx-background-radius: 5;"));
+            vLabel.setOnMouseExited(e  -> vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;"));
             vLabel.setOnMouseClicked(e -> {
                 currentVersion = v;
                 playBtn.setText(">   Play  [" + v + "]");
@@ -170,9 +149,53 @@ public class CenterPanel extends VBox {
         getChildren().addAll(name, tagline, quote, spacer, playRow, scrollPane);
     }
 
+    private String loaderBtnStyle() {
+        return "-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; " +
+            "-fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; " +
+            "-fx-cursor: hand; -fx-padding: 14 10;";
+    }
+
+    private String loaderBtnHoverStyle() {
+        return "-fx-background-color: #161616; -fx-border-color: #1a1a1a; " +
+            "-fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; " +
+            "-fx-cursor: hand; -fx-padding: 14 10;";
+    }
+
+    private String playBtnStyle() {
+        return "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
+            "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
+            "-fx-border-color: #1a1a1a; -fx-border-width: 1; " +
+            "-fx-background-radius: 8; -fx-border-radius: 8; " +
+            "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;";
+    }
+
+    private String playBtnHoverStyle() {
+        return "-fx-background-color: #161616; -fx-text-fill: #ffffff; " +
+            "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
+            "-fx-border-color: #1a1a1a; -fx-border-width: 1; " +
+            "-fx-background-radius: 8; -fx-border-radius: 8; " +
+            "-fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;";
+    }
+
+    private String versionBtnStyle() {
+        return "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
+            "-fx-font-size: 13; -fx-font-weight: bold; " +
+            "-fx-border-color: #1a1a1a; -fx-border-width: 1; " +
+            "-fx-border-radius: 8; -fx-background-radius: 8; " +
+            "-fx-cursor: hand; -fx-min-width: 40; -fx-padding: 16 10;";
+    }
+
+    private String versionBtnHoverStyle() {
+        return "-fx-background-color: #161616; -fx-text-fill: #ffffff; " +
+            "-fx-font-size: 13; -fx-font-weight: bold; " +
+            "-fx-border-color: #1a1a1a; -fx-border-width: 1; " +
+            "-fx-border-radius: 8; -fx-background-radius: 8; " +
+            "-fx-cursor: hand; -fx-min-width: 40; -fx-padding: 16 10;";
+    }
+
     private void setLoaderIcon(ImageView iv, boolean fabric) {
         try {
-            String path = fabric ? "icons/fabric.png" : "icons/forge.png";
+            String path = fabric ? "icons/fabric.png" : "icons/anvil.png";
             Image img = new Image(getClass().getClassLoader().getResourceAsStream(path));
             iv.setImage(img);
         } catch (Exception e) {
@@ -233,23 +256,34 @@ public class CenterPanel extends VBox {
                     logWindow.appendLog("ERROR: " + ex.getMessage());
                     logWindow.setTitle("Rocket Client - Launch Failed");
                 });
-                DiscordRPC.setPresence("In the launcher", "Rocket Client Beta v0.4");
+                DiscordRPC.setPresence("In the launcher", "Rocket Client Beta v0.7");
             }
         });
         thread.setDaemon(true);
         thread.start();
     }
 
+    private static final String[] EXTRA_QUOTES = {
+        "For sight so dear can blind the soul... what use are eyes that don't make you whole?",
+        "Damned by the light that shows the break, For my own imperfection's sake.",
+        "Tell the storms, then, to come as they please, and tell the winds I am the man, for we've chosen to dream, to explore, to discover the breeze. A reflection of the sea brings cheer, thus shall it be, thus will it be."
+    };
+
     private String loadRandomQuote() {
+        List<String> quotes = new ArrayList<>();
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream("quotes.json");
-            List<String> quotes = new Gson().fromJson(
+            List<String> fromFile = new Gson().fromJson(
                 new InputStreamReader(is),
                 new TypeToken<List<String>>(){}.getType()
             );
-            return quotes.get(new Random().nextInt(quotes.size()));
+            if (fromFile != null) quotes.addAll(fromFile);
         } catch (Exception e) {
-            return "";
+            // quotes.json missing or unreadable, fall back to the hardcoded set below
         }
+        quotes.addAll(Arrays.asList(EXTRA_QUOTES));
+
+        if (quotes.isEmpty()) return "";
+        return quotes.get(new Random().nextInt(quotes.size()));
     }
 }

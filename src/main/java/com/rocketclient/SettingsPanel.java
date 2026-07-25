@@ -26,52 +26,38 @@ public class SettingsPanel extends VBox {
 
         Button launchTab  = tabButton("Launch",  true);
         Button discordTab = tabButton("Discord", false);
-        Button logTab     = tabButton("Log",     false);
         Button aboutTab   = tabButton("About",   false);
-        tabBar.getChildren().addAll(launchTab, discordTab, logTab, aboutTab);
+        tabBar.getChildren().addAll(launchTab, discordTab, aboutTab);
 
         VBox launchPanel  = buildLaunchPanel();
         VBox discordPanel = buildDiscordPanel();
-        VBox logPanel     = buildLogPanel();
         VBox aboutPanel   = buildAboutPanel();
 
         discordPanel.setVisible(false); discordPanel.setManaged(false);
-        logPanel.setVisible(false);     logPanel.setManaged(false);
         aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
 
-        StackPane content = new StackPane(launchPanel, discordPanel, logPanel, aboutPanel);
+        StackPane content = new StackPane(launchPanel, discordPanel, aboutPanel);
         VBox.setVgrow(content, Priority.ALWAYS);
 
         launchTab.setOnAction(e -> {
             launchPanel.setVisible(true);   launchPanel.setManaged(true);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
-            logPanel.setVisible(false);     logPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
-            setActive(launchTab, discordTab, logTab, aboutTab);
+            setActive(launchTab, discordTab, aboutTab);
         });
 
         discordTab.setOnAction(e -> {
             discordPanel.setVisible(true);  discordPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
-            logPanel.setVisible(false);     logPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
-            setActive(discordTab, launchTab, logTab, aboutTab);
-        });
-
-        logTab.setOnAction(e -> {
-            logPanel.setVisible(true);      logPanel.setManaged(true);
-            launchPanel.setVisible(false);  launchPanel.setManaged(false);
-            discordPanel.setVisible(false); discordPanel.setManaged(false);
-            aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
-            setActive(logTab, launchTab, discordTab, aboutTab);
+            setActive(discordTab, launchTab, aboutTab);
         });
 
         aboutTab.setOnAction(e -> {
             aboutPanel.setVisible(true);    aboutPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
-            logPanel.setVisible(false);     logPanel.setManaged(false);
-            setActive(aboutTab, launchTab, discordTab, logTab);
+            setActive(aboutTab, launchTab, discordTab);
         });
 
         getChildren().addAll(title, tabBar, content);
@@ -121,13 +107,13 @@ public class SettingsPanel extends VBox {
 
         int systemMax = SettingsManager.getSystemMaxRamMb();
         Label ramLabel = new Label(settings.ramMb + " MB");
-        ramLabel.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        ramLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
         panel.getChildren().add(sectionLabel("RAM Allocation (System max: " + systemMax + " MB)"));
         Slider ramSlider = new Slider(512, systemMax, settings.ramMb);
         ramSlider.setBlockIncrement(512);
         ramSlider.setMajorTickUnit(1024);
-        ramSlider.setStyle("-fx-control-inner-background: #1a1a1a;");
+        ramSlider.getStyleClass().add("rocket-slider");
         ramSlider.setMaxWidth(Double.MAX_VALUE);
         ramSlider.valueProperty().addListener((obs, o, n) -> {
             int val = (n.intValue() / 512) * 512;
@@ -167,38 +153,10 @@ public class SettingsPanel extends VBox {
         }));
 
         Label info = new Label("Shows what you're doing in Minecraft as your Discord status.");
-        info.setStyle("-fx-text-fill: #333333; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        info.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         info.setWrapText(true);
         panel.getChildren().add(info);
 
-        return panel;
-    }
-
-    private VBox buildLogPanel() {
-        VBox panel = new VBox(12);
-        panel.setPadding(new Insets(16, 0, 0, 0));
-
-        panel.getChildren().add(sectionLabel("Game Log"));
-
-        TextArea logArea = new TextArea();
-        logArea.setStyle("-fx-background-color: #0d0d0d; -fx-text-fill: #555555; " +
-            "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-border-color: #1a1a1a;");
-        logArea.setEditable(false);
-        logArea.setWrapText(true);
-        logArea.setPrefHeight(300);
-        logArea.setText("No log yet. Launch Minecraft to see output here.");
-        VBox.setVgrow(logArea, Priority.ALWAYS);
-
-        Button uploadBtn = new Button("Copy Log to Clipboard");
-        uploadBtn.setStyle(secondaryBtnStyle());
-        uploadBtn.setOnAction(e -> {
-            javafx.scene.input.ClipboardContent cc = new javafx.scene.input.ClipboardContent();
-            cc.putString(logArea.getText());
-            javafx.scene.input.Clipboard.getSystemClipboard().setContent(cc);
-            uploadBtn.setText("Copied!");
-        });
-
-        panel.getChildren().addAll(logArea, uploadBtn);
         return panel;
     }
 
@@ -207,11 +165,11 @@ public class SettingsPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
         panel.setAlignment(Pos.TOP_LEFT);
 
-        Label version = new Label("Rocket Client — Beta v0.6");
+        Label version = new Label("Rocket Client — Beta v0.7");
         version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
         Label desc = new Label("A modern, lightweight Minecraft launcher built with love and.. Java");
-        desc.setStyle("-fx-text-fill: #444444; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        desc.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         desc.setWrapText(true);
 
         panel.getChildren().add(sectionLabel("Info"));
@@ -225,7 +183,7 @@ public class SettingsPanel extends VBox {
         Button checkUpdateBtn = new Button("Check for Updates");
         checkUpdateBtn.setStyle(secondaryBtnStyle());
         Label updateStatus = new Label();
-        updateStatus.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        updateStatus.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
         checkUpdateBtn.setOnAction(e -> {
             checkUpdateBtn.setDisable(true);
@@ -259,7 +217,7 @@ public class SettingsPanel extends VBox {
 
         panel.getChildren().add(sectionLabel("Credits"));
         Label credits = new Label("Built by Pernoise");
-        credits.setStyle("-fx-text-fill: #333333; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        credits.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         panel.getChildren().add(credits);
 
         return panel;
@@ -267,7 +225,7 @@ public class SettingsPanel extends VBox {
 
     private Label sectionLabel(String text) {
         Label l = new Label(text.toUpperCase());
-        l.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+        l.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
         return l;
     }
 
@@ -277,7 +235,7 @@ public class SettingsPanel extends VBox {
         row.setSpacing(12);
 
         Label label = new Label(text);
-        label.setStyle("-fx-text-fill: #666666; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono';");
+        label.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono';");
         HBox.setHgrow(label, Priority.ALWAYS);
 
         // Flat toggle button instead of checkbox
@@ -304,17 +262,17 @@ public class SettingsPanel extends VBox {
     }
 
     private String toggleOffStyle() {
-        return "-fx-background-color: #1a1a1a; -fx-text-fill: #444444; " +
+        return "-fx-background-color: #1a1a1a; -fx-text-fill: #ffffff; " +
                "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 9; -fx-font-weight: bold; " +
                "-fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: #2a2a2a; -fx-border-radius: 4; -fx-border-width: 0.5;";
     }
 
     private Label linkLabel(String text, String url) {
         Label l = new Label(text + " →");
-        l.setStyle("-fx-text-fill: #555555; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;");
+        l.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;");
         l.setOnMouseClicked(e -> BrowserUtil.open(url));
-        l.setOnMouseEntered(e -> l.setStyle("-fx-text-fill: #888888; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
-        l.setOnMouseExited(e  -> l.setStyle("-fx-text-fill: #555555; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
+        l.setOnMouseEntered(e -> l.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
+        l.setOnMouseExited(e  -> l.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
         return l;
     }
 
@@ -337,7 +295,7 @@ public class SettingsPanel extends VBox {
     }
 
     private String inactiveTabStyle() {
-        return "-fx-background-color: transparent; -fx-text-fill: #555555; " +
+        return "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
                "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; " +
                "-fx-border-color: transparent; -fx-padding: 8 14; -fx-cursor: hand;";
     }
@@ -350,7 +308,7 @@ public class SettingsPanel extends VBox {
     }
 
     private String secondaryBtnStyle() {
-        return "-fx-background-color: #141414; -fx-text-fill: #666666; " +
+        return "-fx-background-color: #141414; -fx-text-fill: #ffffff; " +
                "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; " +
                "-fx-border-color: #222222; -fx-border-radius: 6; -fx-background-radius: 6; " +
                "-fx-cursor: hand; -fx-padding: 8 16;";

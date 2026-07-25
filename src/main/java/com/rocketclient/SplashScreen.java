@@ -52,7 +52,7 @@ public class SplashScreen {
         title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 22; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
         Label version = new Label("Beta v0.6");
-        version.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
+        version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
         ProgressBar progressBar = new ProgressBar(0);
         progressBar.setPrefWidth(260);
@@ -60,10 +60,10 @@ public class SplashScreen {
         progressBar.setStyle("-fx-accent: #ffffff; -fx-background-color: #111111; -fx-background-radius: 2; -fx-border-radius: 2;");
 
         Label status = new Label("Initializing...");
-        status.setStyle("-fx-text-fill: #2e2e2e; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
+        status.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
         Label website = new Label("rocketclient.rocketclient.abrdns.com");
-        website.setStyle("-fx-text-fill: #1a1a1a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+        website.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
         root.getChildren().addAll(logo, title, version, progressBar, status, website);
 

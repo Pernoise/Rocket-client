@@ -69,14 +69,14 @@ public class FirstLaunchDialog {
             "on our GitHub repository so we can fix them.\n\n" +
             "Thank you for being an early tester."
         );
-        msg.setStyle("-fx-text-fill: #555555; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-text-alignment: center;");
+        msg.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-text-alignment: center;");
         msg.setWrapText(true);
         msg.setMaxWidth(320);
 
         Label link = new Label("github.com/Pernoise/Rocket-client/issues");
-        link.setStyle("-fx-text-fill: #333333; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;");
-        link.setOnMouseEntered(e -> link.setStyle("-fx-text-fill: #666666; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
-        link.setOnMouseExited(e  -> link.setStyle("-fx-text-fill: #333333; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
+        link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;");
+        link.setOnMouseEntered(e -> link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
+        link.setOnMouseExited(e  -> link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
         link.setOnMouseClicked(e -> BrowserUtil.open("https://github.com/Pernoise/Rocket-client/issues"));
 
         Button btn = new Button("Let's go");

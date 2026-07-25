@@ -35,9 +35,10 @@ public class LaunchLogWindow {
         root.setPadding(new Insets(20));
 
         Label title = new Label("LAUNCH LOG");
-        title.setStyle("-fx-text-fill: #2a2a2a; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
         logArea = new TextArea();
+        logArea.getStyleClass().add("rocket-scroll");
         logArea.setStyle(
             "-fx-background-color: #080404; -fx-text-fill: #ffffff; " +
             "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 11; " +
@@ -50,7 +51,7 @@ public class LaunchLogWindow {
 
         Button copyBtn = new Button("Copy to Clipboard");
         copyBtn.setStyle(
-            "-fx-background-color: #141414; -fx-text-fill: #666666; " +
+            "-fx-background-color: #141414; -fx-text-fill: #ffffff; " +
             "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; " +
             "-fx-border-color: #222222; -fx-border-radius: 6; -fx-background-radius: 6; " +
             "-fx-cursor: hand; -fx-padding: 8 16;"
@@ -64,7 +65,7 @@ public class LaunchLogWindow {
 
         Button closeBtn = new Button("Close");
         closeBtn.setStyle(
-            "-fx-background-color: #141414; -fx-text-fill: #666666; " +
+            "-fx-background-color: #141414; -fx-text-fill: #ffffff; " +
             "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; " +
             "-fx-border-color: #222222; -fx-border-radius: 6; -fx-background-radius: 6; " +
             "-fx-cursor: hand; -fx-padding: 8 16;"
@@ -77,6 +78,7 @@ public class LaunchLogWindow {
 
         Scene scene = new Scene(root, 640, 420);
         scene.setFill(Color.TRANSPARENT);
+        scene.getStylesheets().add(getClass().getClassLoader().getResource("css/theme.css").toExternalForm());
         stage.setScene(scene);
     }
 

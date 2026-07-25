@@ -80,7 +80,7 @@ public class AuthPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
 
         Label info = new Label("Sign in with your Minecraft account");
-        info.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        info.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         info.setWrapText(true);
 
         Label codeLabel = new Label();
@@ -88,7 +88,7 @@ public class AuthPanel extends VBox {
         codeLabel.setVisible(false);
 
         Button copyBtn = new Button("Login with Microsoft");
-        copyBtn.setStyle("-fx-background-color: #1a1a1a; -fx-text-fill: #666666; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 11; -fx-cursor: hand; -fx-padding: 6 12; -fx-border-color: #2a2a2a; -fx-border-radius: 6; -fx-background-radius: 6;");
+        copyBtn.setStyle("-fx-background-color: #1a1a1a; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 11; -fx-cursor: hand; -fx-padding: 6 12; -fx-border-color: #2a2a2a; -fx-border-radius: 6; -fx-background-radius: 6;");
         copyBtn.setVisible(false);
         copyBtn.setOnAction(e -> {
             javafx.scene.input.ClipboardContent cc = new javafx.scene.input.ClipboardContent();
@@ -98,7 +98,7 @@ public class AuthPanel extends VBox {
         });
 
         Label status = new Label();
-        status.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        status.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         status.setWrapText(true);
 
         Button loginBtn = new Button("Login with Microsoft");
@@ -153,15 +153,15 @@ public class AuthPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
 
         Label info = new Label("Sign in with your Ely.by account.");
-        info.setStyle("-fx-text-fill: #555555; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        info.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username or Email");
-        usernameField.setStyle("-fx-background-color: #141414; -fx-text-fill: #888888; -fx-prompt-text-fill: #333333; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-border-color: #1a1a1a; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12;");
+        usernameField.setStyle("-fx-background-color: #141414; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #333333; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-border-color: #1a1a1a; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12;");
 
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Password");
-        passwordField.setStyle("-fx-background-color: #141414; -fx-text-fill: #888888; -fx-prompt-text-fill: #333333; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-border-color: #1a1a1a; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12;");
+        passwordField.setStyle("-fx-background-color: #141414; -fx-text-fill: #ffffff; -fx-prompt-text-fill: #333333; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-border-color: #1a1a1a; -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 8 12;");
 
         Label status = new Label();
         status.setStyle("-fx-text-fill: #f44336; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
@@ -220,11 +220,11 @@ public class AuthPanel extends VBox {
             row.setStyle("-fx-background-color: #141414; -fx-background-radius: 6; -fx-padding: 8 12;");
 
             Label name = new Label(acc.username + " (" + acc.type + ")");
-            name.setStyle("-fx-text-fill: #666666; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+            name.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
             HBox.setHgrow(name, Priority.ALWAYS);
 
             Button selectBtn = new Button("Select");
-            selectBtn.setStyle("-fx-background-color: #1a1a1a; -fx-text-fill: #555555; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 4 8; -fx-border-color: #2a2a2a; -fx-border-radius: 4; -fx-background-radius: 4;");
+            selectBtn.setStyle("-fx-background-color: #1a1a1a; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 4 8; -fx-border-color: #2a2a2a; -fx-border-radius: 4; -fx-background-radius: 4;");
             selectBtn.setOnAction(e -> {
                 accountManager.setSelected(acc.uuid);
                 selectBtn.setText("Selected");
@@ -243,7 +243,7 @@ public class AuthPanel extends VBox {
 
         if (accountManager.getAccounts().isEmpty()) {
             Label empty = new Label("No accounts logged in.");
-            empty.setStyle("-fx-text-fill: #333333; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+            empty.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
             panel.getChildren().add(empty);
         }
     }
@@ -253,7 +253,7 @@ public class AuthPanel extends VBox {
     }
 
     private String inactiveTabStyle() {
-        return "-fx-background-color: transparent; -fx-text-fill: #444444; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 6 12; -fx-background-radius: 0;";
+        return "-fx-background-color: transparent; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-border-color: transparent; -fx-padding: 6 12; -fx-background-radius: 0;";
     }
 
     private String primaryBtnStyle() {

@@ -15,9 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class MinecraftLauncher {
 
@@ -28,9 +25,6 @@ public class MinecraftLauncher {
     private static final Path FABRIC_DIR = MC_DIR.resolve("fabric");
     private static final Gson GSON       = new Gson();
     private static final int  DOWNLOAD_THREADS = 16;
-
-    private static final int  JAVA_FEATURE_VERSION = 26;
-    private static final Path JRE_DIR = Paths.get(System.getProperty("user.home"), ".rocketclient", "jre", "jdk" + JAVA_FEATURE_VERSION);
 
     private static final String VERSION_MANIFEST = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     private static final String FABRIC_META      = "https://meta.fabricmc.net/v2/versions/loader";
@@ -60,7 +54,7 @@ public class MinecraftLauncher {
         Path fabricJar = downloadFabric(mcVersion, log);
 
         log.accept("Checking Java runtime...");
-        String javaExec = "java".equals(settings.javaPath) ? ensureJava(log) : settings.javaPath;
+        String javaExec = "java".equals(settings.javaPath) ? JavaManager.getJavaForVersion(mcVersion, log) : settings.javaPath;
 
         log.accept("Launching Minecraft...");
         startProcess(mcVersion, account, settings, clientJar, fabricJar, libs, versionJson, javaExec, log);
@@ -234,160 +228,6 @@ public class MinecraftLauncher {
             }
         }
         return lastJar != null ? lastJar : fabricJar;
-    }
-
-    private static String ensureJava(Consumer<String> log) throws Exception {
-        Path javaExec = findJavaExecutable(JRE_DIR);
-        if (javaExec != null && Files.exists(javaExec)) {
-            log.accept("Java " + JAVA_FEATURE_VERSION + " already installed, skipping download.");
-            return javaExec.toAbsolutePath().toString();
-        }
-
-        log.accept("Java " + JAVA_FEATURE_VERSION + " not found, downloading runtime...");
-        Files.createDirectories(JRE_DIR);
-
-        String os = System.getProperty("os.name").toLowerCase();
-        String osKey = os.contains("win") ? "windows" : os.contains("mac") ? "mac" : "linux";
-        String archRaw = System.getProperty("os.arch").toLowerCase();
-        String archKey = (archRaw.contains("aarch64") || archRaw.contains("arm64")) ? "aarch64" : "x64";
-        String ext = osKey.equals("windows") ? "zip" : "tar.gz";
-
-        String downloadUrl = "https://api.adoptium.net/v3/binary/latest/" + JAVA_FEATURE_VERSION
-            + "/ga/" + osKey + "/" + archKey + "/jre/hotspot/normal/eclipse";
-
-        Path archive = JRE_DIR.resolve("jre." + ext);
-        log.accept("Downloading Java " + JAVA_FEATURE_VERSION + " runtime (" + osKey + "/" + archKey + ")...");
-        downloadFile(downloadUrl, archive, log);
-
-        log.accept("Extracting Java runtime...");
-        if (ext.equals("zip")) {
-            extractZip(archive, JRE_DIR);
-        } else {
-            extractTarGz(archive, JRE_DIR);
-        }
-        Files.deleteIfExists(archive);
-
-        javaExec = findJavaExecutable(JRE_DIR);
-        if (javaExec == null) {
-            throw new Exception("Failed to locate java executable after extracting runtime.");
-        }
-        if (!osKey.equals("windows")) {
-            javaExec.toFile().setExecutable(true);
-        }
-
-        log.accept("Java " + JAVA_FEATURE_VERSION + " ready.");
-        return javaExec.toAbsolutePath().toString();
-    }
-
-    private static Path findJavaExecutable(Path root) throws IOException {
-        if (!Files.exists(root)) return null;
-        String exeName = System.getProperty("os.name").toLowerCase().contains("win") ? "java.exe" : "java";
-        try (var stream = Files.walk(root)) {
-            return stream
-                .filter(p -> p.getFileName() != null && p.getFileName().toString().equals(exeName))
-                .filter(p -> p.toString().replace('\\', '/').contains("/bin/"))
-                .findFirst()
-                .orElse(null);
-        }
-    }
-
-    private static void extractZip(Path archive, Path destDir) throws IOException {
-        try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(archive)))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                Path outPath = destDir.resolve(entry.getName()).normalize();
-                if (!outPath.startsWith(destDir)) {
-                    zis.closeEntry();
-                    continue;
-                }
-                if (entry.isDirectory()) {
-                    Files.createDirectories(outPath);
-                } else {
-                    if (outPath.getParent() != null) Files.createDirectories(outPath.getParent());
-                    try (OutputStream os = Files.newOutputStream(outPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                        zis.transferTo(os);
-                    }
-                }
-                zis.closeEntry();
-            }
-        }
-    }
-
-    private static void extractTarGz(Path archive, Path destDir) throws IOException {
-        try (GZIPInputStream gzis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(archive)));
-             BufferedInputStream bis = new BufferedInputStream(gzis)) {
-            byte[] header = new byte[512];
-            while (true) {
-                int read = readFully(bis, header);
-                if (read < 512 || isEmptyBlock(header)) break;
-
-                String name = new String(header, 0, 100, StandardCharsets.US_ASCII).trim();
-                String prefix = new String(header, 345, 155, StandardCharsets.US_ASCII).trim();
-                if (!prefix.isEmpty()) name = prefix + "/" + name;
-                name = name.replace("\0", "");
-
-                String sizeField = new String(header, 124, 12, StandardCharsets.US_ASCII).replace("\0", "").trim();
-                long size = sizeField.isEmpty() ? 0L : Long.parseLong(sizeField, 8);
-                char typeFlag = (char) header[156];
-
-                Path outPath = destDir.resolve(name).normalize();
-                if (!outPath.startsWith(destDir)) {
-                    skipFully(bis, size + padding(size));
-                    continue;
-                }
-
-                if (typeFlag == '5') {
-                    Files.createDirectories(outPath);
-                } else if (typeFlag == '0' || typeFlag == '\0') {
-                    if (outPath.getParent() != null) Files.createDirectories(outPath.getParent());
-                    try (OutputStream os = Files.newOutputStream(outPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                        long remaining = size;
-                        byte[] buf = new byte[8192];
-                        while (remaining > 0) {
-                            int toRead = (int) Math.min(buf.length, remaining);
-                            int r = bis.read(buf, 0, toRead);
-                            if (r < 0) break;
-                            os.write(buf, 0, r);
-                            remaining -= r;
-                        }
-                    }
-                } else {
-                    skipFully(bis, size);
-                }
-
-                skipFully(bis, padding(size));
-            }
-        }
-    }
-
-    private static long padding(long size) {
-        return (512 - (size % 512)) % 512;
-    }
-
-    private static int readFully(InputStream in, byte[] buf) throws IOException {
-        int total = 0;
-        while (total < buf.length) {
-            int r = in.read(buf, total, buf.length - total);
-            if (r < 0) break;
-            total += r;
-        }
-        return total;
-    }
-
-    private static void skipFully(InputStream in, long n) throws IOException {
-        long remaining = n;
-        byte[] buf = new byte[8192];
-        while (remaining > 0) {
-            int toRead = (int) Math.min(buf.length, remaining);
-            int r = in.read(buf, 0, toRead);
-            if (r < 0) break;
-            remaining -= r;
-        }
-    }
-
-    private static boolean isEmptyBlock(byte[] block) {
-        for (byte b : block) if (b != 0) return false;
-        return true;
     }
 
     private static void startProcess(String mcVersion, AccountManager.Account account,
