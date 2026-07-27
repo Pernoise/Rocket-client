@@ -86,6 +86,33 @@ public class MinecraftLauncher {
         return jar;
     }
 
+    private static final String OS_KEY = detectOsKey();
+    private static final String ARCH_KEY = System.getProperty("os.arch", "").contains("64") ? "64" : "32";
+
+    private static String detectOsKey() {
+        String osName = System.getProperty("os.name", "").toLowerCase();
+        if (osName.contains("win")) return "windows";
+        if (osName.contains("mac") || osName.contains("darwin")) return "osx";
+        return "linux";
+    }
+
+    /** Mojang's rule evaluation: default disallow, later matching rules override earlier ones. */
+    private static boolean rulesAllow(JsonArray rules) {
+        boolean allowed = false;
+        for (var r : rules) {
+            JsonObject rule = r.getAsJsonObject();
+            boolean matches = true;
+            if (rule.has("os")) {
+                JsonObject os = rule.getAsJsonObject("os");
+                if (os.has("name") && !os.get("name").getAsString().equals(OS_KEY)) matches = false;
+            }
+            if (matches) {
+                allowed = rule.get("action").getAsString().equals("allow");
+            }
+        }
+        return allowed;
+    }
+
     private static List<Path> downloadLibraries(JsonObject versionJson, Consumer<String> log) throws Exception {
         JsonArray libs = versionJson.getAsJsonArray("libraries");
         int total = libs.size();
@@ -100,9 +127,16 @@ public class MinecraftLauncher {
             JsonObject lo = lib.getAsJsonObject();
             futures.add(pool.submit(() -> {
                 try {
+                    if (lo.has("rules") && !rulesAllow(lo.getAsJsonArray("rules"))) {
+                        count.incrementAndGet();
+                        return;
+                    }
+
                     if (lo.has("downloads")) {
-                        JsonObject artifact = lo.getAsJsonObject("downloads").getAsJsonObject("artifact");
-                        if (artifact != null) {
+                        JsonObject downloads = lo.getAsJsonObject("downloads");
+
+                        if (downloads.has("artifact") && !downloads.get("artifact").isJsonNull()) {
+                            JsonObject artifact = downloads.getAsJsonObject("artifact");
                             String path = artifact.get("path").getAsString();
                             String url  = artifact.get("url").getAsString();
                             Path dest   = LIBRARIES.resolve(path);
@@ -111,6 +145,25 @@ public class MinecraftLauncher {
                                 downloadFile(url, dest, log);
                             }
                             paths.add(dest);
+                        }
+
+                        if (downloads.has("classifiers") && lo.has("natives")) {
+                            JsonObject natives = lo.getAsJsonObject("natives");
+                            if (natives.has(OS_KEY)) {
+                                String classifierKey = natives.get(OS_KEY).getAsString().replace("${arch}", ARCH_KEY);
+                                JsonObject classifiers = downloads.getAsJsonObject("classifiers");
+                                if (classifiers.has(classifierKey)) {
+                                    JsonObject nativeArtifact = classifiers.getAsJsonObject(classifierKey);
+                                    String npath = nativeArtifact.get("path").getAsString();
+                                    String nurl  = nativeArtifact.get("url").getAsString();
+                                    Path ndest = LIBRARIES.resolve(npath);
+                                    if (!Files.exists(ndest)) {
+                                        Files.createDirectories(ndest.getParent());
+                                        downloadFile(nurl, ndest, log);
+                                    }
+                                    paths.add(ndest);
+                                }
+                            }
                         }
                     }
                     int c = count.incrementAndGet();
@@ -318,28 +371,51 @@ public class MinecraftLauncher {
         }
     }
 
+    private static final int MAX_RETRIES = 3;
+
     private static JsonObject fetchJson(String url) throws Exception {
         return GSON.fromJson(fetch(url), JsonObject.class);
     }
 
     private static String fetch(String urlStr) throws Exception {
-        URL url = new URL(urlStr);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("User-Agent", "RocketClient/0.1");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(30000);
-        return new String(conn.getInputStream().readAllBytes());
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+                conn.setRequestProperty("User-Agent", "RocketClient/0.1");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(30000);
+                return new String(conn.getInputStream().readAllBytes());
+            } catch (Exception e) {
+                lastError = e;
+                if (attempt < MAX_RETRIES) Thread.sleep(500L * attempt);
+            }
+        }
+        throw lastError;
     }
 
     private static void downloadFile(String urlStr, Path dest, Consumer<String> log) throws Exception {
         log.accept("Downloading: " + dest.getFileName());
-        URL url = new URL(urlStr);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestProperty("User-Agent", "RocketClient/0.1");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(30000);
-        try (InputStream in = conn.getInputStream()) {
-            Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+                conn.setRequestProperty("User-Agent", "RocketClient/0.1");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(30000);
+                try (InputStream in = conn.getInputStream()) {
+                    Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+                }
+                return;
+            } catch (Exception e) {
+                lastError = e;
+                Files.deleteIfExists(dest);
+                if (attempt < MAX_RETRIES) {
+                    log.accept("Download failed (" + e.getMessage() + "), retrying...");
+                    Thread.sleep(500L * attempt);
+                }
+            }
         }
+        throw lastError;
     }
 }

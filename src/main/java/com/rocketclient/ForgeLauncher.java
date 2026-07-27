@@ -303,7 +303,7 @@ public class ForgeLauncher {
         cmd.add("-Xmx" + settings.ramMb + "M");
         cmd.add("-Xms512M");
         cmd.add("-Djava.library.path=" + nativesDir.toAbsolutePath());
-        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); 
+        cmd.add("-Dfml.ignoreInvalidMinecraftCertificates=true"); cmd.add("-Dorg.lwjgl.opengl.Display.allowSoftwareOpenGL=true");
         cmd.add("-Dfml.ignorePatchDiscrepancies=true");
 
         if (settings.javaArgs != null && !settings.javaArgs.isEmpty()) {
@@ -338,27 +338,52 @@ public class ForgeLauncher {
         }).start();
     }
 
+    private static final int MAX_RETRIES = 3;
+
     private static JsonObject fetchJson(String url) throws Exception {
         return GSON.fromJson(fetch(url), JsonObject.class);
     }
 
     private static String fetch(String urlStr) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
-        conn.setRequestProperty("User-Agent", "RocketClient/0.1");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(30000);
-        return new String(conn.getInputStream().readAllBytes());
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+                conn.setRequestProperty("User-Agent", "RocketClient/0.1");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(30000);
+                return new String(conn.getInputStream().readAllBytes());
+            } catch (Exception e) {
+                lastError = e;
+                if (attempt < MAX_RETRIES) Thread.sleep(500L * attempt);
+            }
+        }
+        throw lastError;
     }
 
     private static void downloadFile(String urlStr, Path dest, Consumer<String> log) throws Exception {
         log.accept("Downloading: " + dest.getFileName());
-        HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
-        conn.setRequestProperty("User-Agent", "RocketClient/0.1");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(60000);
-        conn.setInstanceFollowRedirects(true);
-        try (InputStream in = conn.getInputStream()) {
-            Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                HttpURLConnection conn = (HttpURLConnection) new URL(urlStr).openConnection();
+                conn.setRequestProperty("User-Agent", "RocketClient/0.1");
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(60000);
+                conn.setInstanceFollowRedirects(true);
+                try (InputStream in = conn.getInputStream()) {
+                    Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+                }
+                return;
+            } catch (Exception e) {
+                lastError = e;
+                Files.deleteIfExists(dest);
+                if (attempt < MAX_RETRIES) {
+                    log.accept("Download failed (" + e.getMessage() + "), retrying...");
+                    Thread.sleep(500L * attempt);
+                }
+            }
         }
+        throw lastError;
     }
 }

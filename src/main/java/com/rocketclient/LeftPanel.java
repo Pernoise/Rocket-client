@@ -3,7 +3,6 @@ package com.rocketclient;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -13,7 +12,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,21 +56,44 @@ public class LeftPanel extends VBox {
         AccountManager.Account acc = accountManager.getSelected();
         if (acc == null) return;
 
+        javafx.scene.layout.StackPane avatarBox = new javafx.scene.layout.StackPane();
+        avatarBox.setPrefSize(34, 34);
+        avatarBox.setMaxSize(34, 34);
+        avatarBox.setStyle("-fx-background-color: #161616; -fx-background-radius: 8;");
+
         try {
-            String avatarUrl = "https://crafatar.com/avatars/" + acc.uuid + "?size=16&overlay=true";
+            String avatarUrl = "https://skins.manacube.com/avatars/" + acc.uuid;
             Image avatar = new Image(avatarUrl, true);
             ImageView iv = new ImageView(avatar);
-            iv.setFitWidth(24);
-            iv.setFitHeight(24);
+            iv.setFitWidth(28);
+            iv.setFitHeight(28);
             iv.setPreserveRatio(true);
 
-            Label nameLabel = new Label(acc.username);
-            nameLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+            avatar.errorProperty().addListener((obs, was, isError) -> {
+                if (isError) {
+                    Platform.runLater(() -> {
+                        avatarBox.getChildren().clear();
+                        avatarBox.getChildren().add(fallbackAvatarLabel());
+                    });
+                }
+            });
 
-            Platform.runLater(() -> accountWidget.getChildren().addAll(iv, nameLabel));
+            avatarBox.getChildren().add(iv);
         } catch (Exception e) {
             System.out.println("Could not load avatar: " + e.getMessage());
+            avatarBox.getChildren().add(fallbackAvatarLabel());
         }
+
+        Label nameLabel = new Label(acc.username);
+        nameLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+
+        Platform.runLater(() -> accountWidget.getChildren().addAll(avatarBox, nameLabel));
+    }
+
+    private Label fallbackAvatarLabel() {
+        Label fallback = new Label("?");
+        fallback.setStyle("-fx-text-fill: #555555; -fx-font-size: 14; -fx-font-family: 'JetBrains Mono';");
+        return fallback;
     }
 
     private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url, boolean isAuth, boolean isSettings) {
@@ -118,41 +139,11 @@ public class LeftPanel extends VBox {
     private void openAuthPanel() {
         Stage popup = new Stage();
         popup.initModality(Modality.APPLICATION_MODAL);
-        popup.initStyle(StageStyle.UNDECORATED);
 
         AuthPanel authPanel = new AuthPanel(accountManager);
+        authPanel.setStyle("-fx-background-color: #0f0f0f;");
 
-        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
-        closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        );
-        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        ));
-        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        ));
-        closeBtn.setOnAction(e -> {
-            popup.close();
-            refreshAccountWidget();
-        });
-
-        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
-        topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setPadding(new Insets(6, 6, 0, 6));
-        topBar.setStyle("-fx-background-color: #0f0f0f;");
-
-        VBox root = new VBox(topBar, authPanel);
-        root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
-
-        Scene scene = new Scene(root, 400, 500);
-        popup.setScene(scene);
+        RocketWindowChrome.apply(popup, "LOGIN", authPanel, 400, 500, this::refreshAccountWidget);
         popup.centerOnScreen();
         popup.showAndWait();
     }
@@ -160,38 +151,11 @@ public class LeftPanel extends VBox {
     private void openSettingsPanel() {
         Stage popup = new Stage();
         popup.initModality(Modality.APPLICATION_MODAL);
-        popup.initStyle(StageStyle.UNDECORATED);
 
         SettingsPanel settingsPanel = new SettingsPanel(settingsManager);
+        settingsPanel.setStyle("-fx-background-color: #0f0f0f;");
 
-        javafx.scene.control.Button closeBtn = new javafx.scene.control.Button("x");
-        closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        );
-        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        ));
-        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(
-            "-fx-background-color: transparent; -fx-text-fill: #ffffff; " +
-            "-fx-font-size: 13; -fx-cursor: hand; -fx-border-color: transparent; " +
-            "-fx-padding: 2 6;"
-        ));
-        closeBtn.setOnAction(e -> popup.close());
-
-        javafx.scene.layout.HBox topBar = new javafx.scene.layout.HBox(closeBtn);
-        topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setPadding(new Insets(6, 6, 0, 6));
-        topBar.setStyle("-fx-background-color: #0f0f0f;");
-
-        VBox root = new VBox(topBar, settingsPanel);
-        root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
-
-        Scene scene = new Scene(root, 520, 580);
-        popup.setScene(scene);
+        RocketWindowChrome.apply(popup, "SETTINGS", settingsPanel, 520, 580, null);
         popup.centerOnScreen();
         popup.showAndWait();
     }

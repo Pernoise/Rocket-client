@@ -2,16 +2,12 @@ package com.rocketclient;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 public class LaunchLogWindow {
 
@@ -20,22 +16,10 @@ public class LaunchLogWindow {
 
     public LaunchLogWindow() {
         stage = new Stage();
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setMinWidth(640);
-        stage.setMinHeight(400);
 
         VBox root = new VBox(12);
-        root.setStyle(
-            "-fx-background-color: #080404; " +
-            "-fx-background-radius: 12; " +
-            "-fx-border-radius: 12; " +
-            "-fx-border-color: #1a1a1a; " +
-            "-fx-border-width: 1;"
-        );
+        root.setStyle("-fx-background-color: #080404;");
         root.setPadding(new Insets(20));
-
-        Label title = new Label("LAUNCH LOG");
-        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
         logArea = new TextArea();
         logArea.getStyleClass().add("rocket-scroll");
@@ -74,12 +58,9 @@ public class LaunchLogWindow {
 
         HBox btnRow = new HBox(8, copyBtn, closeBtn);
 
-        root.getChildren().addAll(title, logArea, btnRow);
+        root.getChildren().addAll(logArea, btnRow);
 
-        Scene scene = new Scene(root, 640, 420);
-        scene.setFill(Color.TRANSPARENT);
-        scene.getStylesheets().add(getClass().getClassLoader().getResource("css/theme.css").toExternalForm());
-        stage.setScene(scene);
+        RocketWindowChrome.apply(stage, "LAUNCH LOG", root, 640, 420, null);
     }
 
     public void show() {

@@ -220,6 +220,15 @@ public class SettingsPanel extends VBox {
         credits.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
         panel.getChildren().add(credits);
 
+        HBox avatarCreditRow = new HBox(4);
+        avatarCreditRow.setAlignment(Pos.CENTER_LEFT);
+        Label creditPrefix = new Label("Thank you to");
+        creditPrefix.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        Label creditSuffix = new Label("for providing avatars.");
+        creditSuffix.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        avatarCreditRow.getChildren().addAll(creditPrefix, linkLabel("Crafatar", "https://crafatar.com"), creditSuffix);
+        panel.getChildren().add(avatarCreditRow);
+
         return panel;
     }
 

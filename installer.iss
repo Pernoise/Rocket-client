@@ -1,5 +1,5 @@
 #define MyAppName "Rocket Client"
-#define MyAppVersion "0.6.0"
+#define MyAppVersion "0.7.0"
 #define MyAppExeName "RocketClient.exe"
 #define MyAppDir "build\app-image\RocketClient"
 
@@ -11,7 +11,7 @@ AppPublisher=Pernoise
 DefaultDirName={autopf}\RocketClient
 DefaultGroupName=Rocket Client
 OutputDir=build\installer
-OutputBaseFilename=RocketClient-0.6.0-Setup
+OutputBaseFilename=RocketClient-0.7.0-Setup
 SetupIconFile=src\main\resources\icons\logo.ico
 Compression=lzma
 SolidCompression=yes
@@ -31,7 +31,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
 english.WelcomeLabel1=Welcome to Rocket Client
-english.WelcomeLabel2=A performance-focused Minecraft client.%n%nThis will install Rocket Client Beta v0.6.0 on your computer.%n%nClick Next to continue.
+english.WelcomeLabel2=A performance-focused Minecraft client.%n%nThis will install Rocket Client Beta v0.7.0 on your computer.%n%nClick Next to continue.
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
