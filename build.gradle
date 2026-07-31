@@ -40,7 +40,7 @@ jar {
 
 task copyDeps(type: Copy) {
     from configurations.runtimeClasspath
-    into 'build/libs/deps'
+    into 'build/libs'
 }
 
 build.dependsOn copyDeps

@@ -17,7 +17,6 @@ public class SettingsManager {
     public boolean hideLauncher  = true;
     public boolean closeLauncher = false;
     public boolean discordRpc    = true;
-    public boolean autoUpdate    = true;
 
     public SettingsManager() {}
 
@@ -32,7 +31,6 @@ public class SettingsManager {
                 if (obj.has("hideLauncher"))  this.hideLauncher  = obj.get("hideLauncher").getAsBoolean();
                 if (obj.has("closeLauncher")) this.closeLauncher = obj.get("closeLauncher").getAsBoolean();
                 if (obj.has("discordRpc"))    this.discordRpc    = obj.get("discordRpc").getAsBoolean();
-                if (obj.has("autoUpdate"))    this.autoUpdate    = obj.get("autoUpdate").getAsBoolean();
             }
         } catch (Exception e) {
             System.out.println("Could not load settings: " + e.getMessage());
@@ -49,7 +47,6 @@ public class SettingsManager {
             obj.addProperty("hideLauncher",  hideLauncher);
             obj.addProperty("closeLauncher", closeLauncher);
             obj.addProperty("discordRpc",    discordRpc);
-            obj.addProperty("autoUpdate",    autoUpdate);
             Files.write(SETTINGS_FILE, GSON.toJson(obj).getBytes());
         } catch (Exception e) {
             System.out.println("Could not save settings: " + e.getMessage());

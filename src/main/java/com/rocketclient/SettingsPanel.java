@@ -133,11 +133,7 @@ public class SettingsPanel extends VBox {
             settings.save();
         }));
 
-        panel.getChildren().add(sectionLabel("Updates"));
-        panel.getChildren().add(toggleRow("Automatically check for updates", settings.autoUpdate, val -> {
-            settings.autoUpdate = val;
-            settings.save();
-        }));
+
 
         return panel;
     }

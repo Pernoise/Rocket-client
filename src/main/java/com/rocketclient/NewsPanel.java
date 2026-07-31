@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 public class NewsPanel extends VBox {
 
     public NewsPanel() {
-        setPrefWidth(260);
+        setPrefWidth(300);
         setStyle("-fx-border-color: #161616; -fx-border-width: 0 0 0 1;");
         setPadding(new Insets(20, 20, 20, 20));
         setSpacing(10);

@@ -253,6 +253,12 @@ public class CenterPanel extends VBox {
                     playBtn.setText(">   Play  [" + version + "]");
                     playBtn.setDisable(false);
                     logWindow.setTitle("Rocket Client - Minecraft Running");
+
+                    if (settingsManager.closeLauncher) {
+                        TrayManager.quit();
+                    } else if (settingsManager.hideLauncher) {
+                        TrayManager.minimizeToTray();
+                    }
                 });
             } catch (Exception ex) {
                 javafx.application.Platform.runLater(() -> {

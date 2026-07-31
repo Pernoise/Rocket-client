@@ -27,7 +27,7 @@ public class LeftPanel extends VBox {
         this.accountManager  = accountManager;
         this.settingsManager = settingsManager;
 
-        setPrefWidth(56);
+        setPrefWidth(68);
         setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 0 1 0 0; -fx-background-radius: 0 0 0 12; -fx-border-radius: 0 0 0 12;");
         setAlignment(Pos.TOP_CENTER);
         setPadding(new Insets(14, 0, 14, 0));
@@ -68,6 +68,11 @@ public class LeftPanel extends VBox {
             iv.setFitWidth(28);
             iv.setFitHeight(28);
             iv.setPreserveRatio(true);
+
+            javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(28, 28);
+            clip.setArcWidth(10);
+            clip.setArcHeight(10);
+            iv.setClip(clip);
 
             avatar.errorProperty().addListener((obs, was, isError) -> {
                 if (isError) {

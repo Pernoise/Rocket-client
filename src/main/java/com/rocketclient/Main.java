@@ -24,6 +24,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        stage.setTitle("Rocket Client");
+        stage.setTitle("Rocket Client");
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Regular.ttf"), 12);
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Bold.ttf"), 12);
 
@@ -58,7 +60,13 @@ public class Main extends Application {
             closeBtn.setStyle(titleBtnStyle());
             closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(closeBtnHoverStyle()));
             closeBtn.setOnMouseExited(e -> closeBtn.setStyle(titleBtnStyle()));
-            closeBtn.setOnAction(e -> { DiscordRPC.stop(); Platform.exit(); });
+            closeBtn.setOnAction(e -> {
+                if (settingsManager.hideLauncher) {
+                    TrayManager.minimizeToTray();
+                } else {
+                    TrayManager.quit();
+                }
+            });
 
             HBox spacer = new HBox();
             HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -88,13 +96,13 @@ public class Main extends Application {
             wrapper.setStyle("-fx-background-color: #080404; -fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
 
             stage.initStyle(StageStyle.TRANSPARENT);
-            Scene scene = new Scene(wrapper, 1200, 700);
+            Scene scene = new Scene(wrapper, 1320, 770);
             scene.setFill(Color.TRANSPARENT);
             scene.getStylesheets().add(getClass().getClassLoader().getResource("css/theme.css").toExternalForm());
             stage.setScene(scene);
             stage.setResizable(true);
-            stage.setMinWidth(1200);
-            stage.setMinHeight(700);
+            stage.setMinWidth(1320);
+            stage.setMinHeight(770);
 
             try {
                 Image icon = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
@@ -104,6 +112,7 @@ public class Main extends Application {
             }
 
             stage.show();
+            TrayManager.init(stage);
 
             if (FirstLaunchDialog.isFirstLaunch()) {
                 Platform.runLater(() -> FirstLaunchDialog.show());
