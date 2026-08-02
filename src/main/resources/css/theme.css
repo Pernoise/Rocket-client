@@ -1,6 +1,5 @@
-/* Rocket Client - dark theme overrides for default JavaFX controls */
 
-/* ===== Scrollbars (version list dropdown, etc.) ===== */
+/*Scrollbars */
 .rocket-scroll {
     -fx-background-color: transparent;
 }
@@ -53,7 +52,7 @@
     -fx-background-color: transparent;
 }
 
-/* ===== Sliders (RAM allocation, etc.) ===== */
+/* Sliders (RAM allocation etc) */
 .rocket-slider .track {
     -fx-background-color: #141414;
     -fx-background-radius: 6;
