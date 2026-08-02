@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import java.io.InputStream;
@@ -26,8 +27,32 @@ public class CenterPanel extends VBox {
 
     private final AccountManager accountManager;
     private final SettingsManager settingsManager;
+    private final InstanceManager instanceManager = new InstanceManager();
+
+    private InstanceManager.Instance currentInstance = null;
     private boolean fabricMode = true;
-    private String currentVersion = "26.2";
+
+    private HBox recentRow;
+    private Button selectBtn;
+    private HBox playRow;
+    private Button playBtn;
+    private VBox dropdownContent;
+    private ScrollPane scrollPane;
+    private ImageView loaderIcon;
+
+    private static final String[] VERSIONS = {
+        "26.2", "26.1.2", "26.1.1", "26.1",
+        "1.21.11", "1.21.10", "1.21.9", "1.21.8", "1.21.7",
+        "1.21.6", "1.21.5", "1.21.4", "1.21.3", "1.21.2",
+        "1.21.1", "1.21", "1.20.6", "1.20.5", "1.20.4",
+        "1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4",
+        "1.19.3", "1.19.2", "1.19.1", "1.19",
+        "1.18.2", "1.18.1", "1.18",
+        "1.17.1", "1.17",
+        "1.16.5", "1.16.4", "1.16.3", "1.16.2", "1.16.1", "1.16",
+        "1.15.2", "1.15.1", "1.15",
+        "1.14.4", "1.14.3", "1.14.2", "1.14.1", "1.14"
+    };
 
     public CenterPanel(AccountManager accountManager, SettingsManager settingsManager) {
         this.accountManager  = accountManager;
@@ -49,10 +74,19 @@ public class CenterPanel extends VBox {
         quote.setMaxWidth(420);
         quote.setAlignment(Pos.CENTER);
 
-        VBox spacer = new VBox();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
+        VBox topSpacer = new VBox();
+        VBox.setVgrow(topSpacer, Priority.ALWAYS);
 
-        ImageView loaderIcon = new ImageView();
+        recentRow = new HBox(8);
+        recentRow.setAlignment(Pos.CENTER);
+        recentRow.setMaxWidth(420);
+        recentRow.setPadding(new Insets(10));
+        recentRow.setStyle("-fx-border-color: #1a1a1a; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+        VBox bottomSpacer = new VBox();
+        VBox.setVgrow(bottomSpacer, Priority.ALWAYS);
+
+        loaderIcon = new ImageView();
         loaderIcon.setFitWidth(22);
         loaderIcon.setFitHeight(22);
         loaderIcon.setPreserveRatio(true);
@@ -64,94 +98,190 @@ public class CenterPanel extends VBox {
         loaderBtn.setOnMouseEntered(e -> loaderBtn.setStyle(loaderBtnHoverStyle()));
         loaderBtn.setOnMouseExited(e -> loaderBtn.setStyle(loaderBtnStyle()));
         loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
+        loaderBtn.setOnAction(e -> {
+            fabricMode = !fabricMode;
+            setLoaderIcon(loaderIcon, fabricMode);
+            loaderBtn.setTooltip(new javafx.scene.control.Tooltip(
+                fabricMode ? "Fabric - click to switch to Forge 1.8.9" : "Forge 1.8.9 - click to switch to Fabric"
+            ));
+        });
 
-        Button playBtn = new Button(">   Play  [" + currentVersion + "]");
+        playBtn = new Button();
         playBtn.setStyle(playBtnStyle());
         playBtn.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(playBtn, Priority.ALWAYS);
-
         playBtn.setOnMouseEntered(e -> playBtn.setStyle(playBtnHoverStyle()));
         playBtn.setOnMouseExited(e -> playBtn.setStyle(playBtnStyle()));
+        playBtn.setOnAction(e -> handlePlay(playBtn));
 
         Button versionBtn = new Button("v");
         versionBtn.setStyle(versionBtnStyle());
         versionBtn.setOnMouseEntered(e -> versionBtn.setStyle(versionBtnHoverStyle()));
         versionBtn.setOnMouseExited(e -> versionBtn.setStyle(versionBtnStyle()));
 
-        HBox playRow = new HBox(8, loaderBtn, playBtn, versionBtn);
+        playRow = new HBox(8, loaderBtn, playBtn, versionBtn);
         playRow.setMaxWidth(Double.MAX_VALUE);
         playRow.setAlignment(Pos.CENTER);
+        playRow.setVisible(false);
+        playRow.setManaged(false);
 
-        VBox versionList = new VBox(2);
-        versionList.setStyle("-fx-background-color: #0d0d0d;");
-        versionList.setPadding(new Insets(4));
+        selectBtn = new Button("Select or create an instance");
+        selectBtn.setStyle(playBtnStyle());
+        selectBtn.setMaxWidth(Double.MAX_VALUE);
+        selectBtn.setOnMouseEntered(e -> selectBtn.setStyle(playBtnHoverStyle()));
+        selectBtn.setOnMouseExited(e -> selectBtn.setStyle(playBtnStyle()));
+        selectBtn.setOnAction(e -> toggleDropdown());
 
-        String[] versions = {
-            "26.2", "26.1.2", "26.1.1", "26.1",
-            "1.21.11", "1.21.10", "1.21.9", "1.21.8", "1.21.7",
-            "1.21.6", "1.21.5", "1.21.4", "1.21.3", "1.21.2",
-            "1.21.1", "1.21", "1.20.6", "1.20.5", "1.20.4",
-            "1.20.3", "1.20.2", "1.20.1", "1.20", "1.19.4",
-            "1.19.3", "1.19.2", "1.19.1", "1.19",
-            "1.18.2", "1.18.1", "1.18",
-            "1.17.1", "1.17",
-            "1.16.5", "1.16.4", "1.16.3", "1.16.2", "1.16.1", "1.16",
-            "1.15.2", "1.15.1", "1.15",
-            "1.14.4", "1.14.3", "1.14.2", "1.14.1", "1.14"
-        };
+        dropdownContent = new VBox(2);
+        dropdownContent.setPadding(new Insets(4));
 
-        ScrollPane scrollPane = new ScrollPane(versionList);
+        scrollPane = new ScrollPane(dropdownContent);
         scrollPane.getStyleClass().add("rocket-scroll");
-        scrollPane.setMaxHeight(160);
+        scrollPane.setMaxHeight(220);
+        scrollPane.setMaxWidth(420);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background: #0d0d0d; -fx-background-color: #0d0d0d; -fx-border-color: #1a1a1a; -fx-border-radius: 7; -fx-background-radius: 7;");
         scrollPane.setVisible(false);
         scrollPane.setManaged(false);
 
-        for (String v : versions) {
-            Label vLabel = new Label(v);
-            vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;");
-            vLabel.setMaxWidth(Double.MAX_VALUE);
-            vLabel.setOnMouseEntered(e -> vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10; -fx-background-color: #161616; -fx-background-radius: 5;"));
-            vLabel.setOnMouseExited(e  -> vLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;"));
-            vLabel.setOnMouseClicked(e -> {
-                currentVersion = v;
-                playBtn.setText(">   Play  [" + v + "]");
-                scrollPane.setVisible(false);
-                scrollPane.setManaged(false);
-            });
-            versionList.getChildren().add(vLabel);
+        versionBtn.setOnAction(e -> toggleDropdown());
+
+        refreshRecentRow();
+
+        getChildren().addAll(name, tagline, quote, topSpacer, recentRow, bottomSpacer, selectBtn, playRow, scrollPane);
+    }
+
+    private void toggleDropdown() {
+        boolean opening = !scrollPane.isVisible();
+        if (opening) showInstancePicker();
+        scrollPane.setVisible(opening);
+        scrollPane.setManaged(opening);
+    }
+
+    private void closeDropdown() {
+        scrollPane.setVisible(false);
+        scrollPane.setManaged(false);
+    }
+
+    private void showInstancePicker() {
+        dropdownContent.getChildren().clear();
+
+        List<InstanceManager.Instance> all = instanceManager.list();
+        for (InstanceManager.Instance inst : all) {
+            dropdownContent.getChildren().add(dropdownRow(inst.name, () -> {
+                selectInstance(inst);
+                closeDropdown();
+            }));
         }
 
-        versionBtn.setOnAction(e -> {
-            boolean visible = scrollPane.isVisible();
-            scrollPane.setVisible(!visible);
-            scrollPane.setManaged(!visible);
-        });
+        Label newInstanceRow = new Label("+  New instance");
+        newInstanceRow.setStyle(dropdownRowStyle() + " -fx-text-fill: #888888;");
+        newInstanceRow.setMaxWidth(Double.MAX_VALUE);
+        newInstanceRow.setOnMouseEntered(e -> newInstanceRow.setStyle(dropdownRowHoverStyle() + " -fx-text-fill: #ffffff;"));
+        newInstanceRow.setOnMouseExited(e -> newInstanceRow.setStyle(dropdownRowStyle() + " -fx-text-fill: #888888;"));
+        newInstanceRow.setOnMouseClicked(e -> showVersionPicker());
+        dropdownContent.getChildren().add(newInstanceRow);
+    }
 
-        loaderBtn.setOnAction(e -> {
-            fabricMode = !fabricMode;
-            setLoaderIcon(loaderIcon, fabricMode);
-            if (fabricMode) {
-                currentVersion = "26.2";
-                playBtn.setText(">   Play  [26.2]");
-                versionBtn.setVisible(true);
-                versionBtn.setManaged(true);
-                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
-            } else {
-                currentVersion = "1.8.9";
-                playBtn.setText(">   Play  [1.8.9 - Forge]");
-                versionBtn.setVisible(false);
-                versionBtn.setManaged(false);
-                scrollPane.setVisible(false);
-                scrollPane.setManaged(false);
-                loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Forge 1.8.9 - click to switch to Fabric"));
-            }
-        });
+    private void showVersionPicker() {
+        dropdownContent.getChildren().clear();
+        for (String v : VERSIONS) {
+            dropdownContent.getChildren().add(dropdownRow(v, () -> {
+                closeDropdown();
+                NewInstanceDialog.open(instanceManager, v, fabricMode ? "fabric" : "forge", created -> {
+                    selectInstance(created);
+                    refreshRecentRow();
+                });
+            }));
+        }
+    }
 
-        playBtn.setOnAction(e -> handlePlay(playBtn));
+    private Label dropdownRow(String text, Runnable onClick) {
+        Label row = new Label(text);
+        row.setStyle(dropdownRowStyle());
+        row.setMaxWidth(Double.MAX_VALUE);
+        row.setOnMouseEntered(e -> row.setStyle(dropdownRowHoverStyle()));
+        row.setOnMouseExited(e -> row.setStyle(dropdownRowStyle()));
+        row.setOnMouseClicked(e -> onClick.run());
+        return row;
+    }
 
-        getChildren().addAll(name, tagline, quote, spacer, playRow, scrollPane);
+    private String dropdownRowStyle() {
+        return "-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-padding: 6 10;";
+    }
+
+    private String dropdownRowHoverStyle() {
+        return dropdownRowStyle() + " -fx-background-color: #161616; -fx-background-radius: 5;";
+    }
+
+    private void selectInstance(InstanceManager.Instance inst) {
+        currentInstance = inst;
+        fabricMode = !inst.loader.equals("forge");
+        setLoaderIcon(loaderIcon, fabricMode);
+        playBtn.setText(">   Play  [" + inst.name + "]");
+
+        selectBtn.setVisible(false);
+        selectBtn.setManaged(false);
+        playRow.setVisible(true);
+        playRow.setManaged(true);
+
+        refreshRecentRow();
+    }
+
+    private void refreshRecentRow() {
+        recentRow.getChildren().clear();
+        List<InstanceManager.Instance> recent = instanceManager.recent(3);
+        for (InstanceManager.Instance inst : recent) {
+            recentRow.getChildren().add(recentTile(inst));
+        }
+        recentRow.setVisible(!recent.isEmpty());
+        recentRow.setManaged(!recent.isEmpty());
+    }
+
+    private VBox recentTile(InstanceManager.Instance inst) {
+        boolean isSelected = currentInstance != null && currentInstance.id.equals(inst.id);
+
+        ImageView iconView = new ImageView();
+        iconView.setFitWidth(20);
+        iconView.setFitHeight(20);
+        iconView.setPreserveRatio(true);
+        try {
+            iconView.setImage(new Image(getClass().getClassLoader().getResourceAsStream(inst.icon)));
+        } catch (Exception ignored) {}
+
+        StackPane iconBox = new StackPane(iconView);
+        iconBox.setPrefSize(28, 28);
+        iconBox.setMaxSize(28, 28);
+        iconBox.setStyle("-fx-background-color: " + (isSelected ? "#1f1f1f" : "#161616") + "; -fx-background-radius: 6;");
+
+        Label nameLabel = new Label(inst.name);
+        nameLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+
+        Label timeLabel = new Label(relativeTime(inst.lastPlayed));
+        timeLabel.setStyle("-fx-text-fill: " + (isSelected ? "#aaaaaa" : "#888888") + "; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
+
+        VBox tile = new VBox(6, iconBox, nameLabel, timeLabel);
+        tile.setPadding(new Insets(10));
+        tile.setStyle(
+            "-fx-background-color: " + (isSelected ? "#161616" : "#0f0f0f") + "; " +
+            "-fx-border-color: " + (isSelected ? "#ffffff" : "#1a1a1a") + "; " +
+            "-fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand;"
+        );
+        tile.setPrefWidth(120);
+        tile.setOnMouseClicked(e -> selectInstance(inst));
+        return tile;
+    }
+
+    private String relativeTime(long lastPlayed) {
+        if (lastPlayed <= 0) return "never played";
+        long diffMs = System.currentTimeMillis() - lastPlayed;
+        long minutes = diffMs / 60000;
+        if (minutes < 1) return "just now";
+        if (minutes < 60) return minutes + "m ago";
+        long hours = minutes / 60;
+        if (hours < 24) return hours + "h ago";
+        long days = hours / 24;
+        return days + "d ago";
     }
 
     private String loaderBtnStyle() {
@@ -209,6 +339,8 @@ public class CenterPanel extends VBox {
     }
 
     private void handlePlay(Button playBtn) {
+        if (currentInstance == null) return;
+
         if (!accountManager.hasAccounts()) {
             String original = playBtn.getText();
             playBtn.setText("Login first!");
@@ -220,12 +352,7 @@ public class CenterPanel extends VBox {
             );
             new Timeline(new KeyFrame(Duration.seconds(2), e -> {
                 playBtn.setText(original);
-                playBtn.setStyle(
-                    "-fx-background-color: #0f0f0f; -fx-text-fill: #ffffff; " +
-                    "-fx-font-size: 13; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
-                    "-fx-border-color: #1a1a1a; -fx-border-width: 1 0 1 0; " +
-                    "-fx-background-radius: 0; -fx-cursor: hand; -fx-padding: 16 24; -fx-opacity: 0.88;"
-                );
+                playBtn.setStyle(playBtnStyle());
             })).play();
             return;
         }
@@ -238,7 +365,9 @@ public class CenterPanel extends VBox {
 
         AccountManager.Account account = accountManager.getSelected();
         boolean useFabric = fabricMode;
-        String version    = currentVersion;
+        String version = currentInstance.mcVersion;
+        InstanceManager.Instance instanceAtLaunch = currentInstance;
+        String playLabel = ">   Play  [" + instanceAtLaunch.name + "]";
 
         DiscordRPC.updatePlaying(version);
 
@@ -249,10 +378,12 @@ public class CenterPanel extends VBox {
                 } else {
                     ForgeLauncher.launch(account, settingsManager, logWindow::appendLog);
                 }
+                instanceManager.markPlayed(instanceAtLaunch);
                 javafx.application.Platform.runLater(() -> {
-                    playBtn.setText(">   Play  [" + version + "]");
+                    playBtn.setText(playLabel);
                     playBtn.setDisable(false);
                     logWindow.setTitle("Rocket Client - Minecraft Running");
+                    refreshRecentRow();
 
                     if (settingsManager.closeLauncher) {
                         TrayManager.quit();
