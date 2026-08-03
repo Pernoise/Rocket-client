@@ -95,25 +95,21 @@ Rocket Client is currently in **Beta** and is under active development.
 - [x] Improved Microsoft authentication
 - [x] Faster launcher startup
 - [x] Automatic Java installation
-- [ ] Improved download manager
-- [ ] Better launcher settings
-- [ ] Better error handling
+- [x] Improved download manager
+- [x] Better launcher settings
 - [x] Crash reporting
-- [ ] General performance improvements
+- [x] General performance improvements
 
 ---
 
 ## Planned
 
 - [ ] Automatic launcher updates
-- [ ] Fabric installation
-- [ ] Forge installation
-- [ ] NeoForge installation
+- [x] Fabric installation
+- [x] Forge installation
 - [ ] Mod management
-- [ ] Instance management
-- [ ] Built-in log viewer
-- [ ] Launcher themes
-- [ ] Localization
+- [x] Instance management
+- [x] Built-in log viewer
 - [ ] Additional quality-of-life improvements
 
 ---
