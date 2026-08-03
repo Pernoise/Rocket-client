@@ -36,6 +36,8 @@ public class LeftPanel extends VBox {
         VBox logo     = createIcon("icons/rocket-launch.png", "Rocket Client", true,  null,  false, false);
         VBox account  = createIcon("icons/user.png",          "Account",       false, null,  true,  false);
         VBox settings = createIcon("icons/gear.png",          "Settings",      false, null,  false, true);
+        VBox logsBtn  = createIcon("icons/version.png",       "View Logs",     false, null,  false, false);
+        logsBtn.setOnMouseClicked(e -> LogViewerWindow.open());
         VBox launcherFolder = createIcon("icons/folder.png",  "Open Launcher Folder", false, null, false, false);
         launcherFolder.setOnMouseClicked(e -> openLauncherFolder());
 
@@ -47,7 +49,7 @@ public class LeftPanel extends VBox {
 
         VBox discord = createIcon("icons/discord-logo.png", "Discord", false, "https://discord.com/invite/urHfdFdsbh", false, false);
         VBox website = createIcon("icons/globe.png", "Website", false, "https://rocketclient.rocketclient.abrdns.com/#home", false, false);
-        getChildren().addAll(logo, account, settings, launcherFolder, spacer, accountWidget, discord, website);
+        getChildren().addAll(logo, account, settings, logsBtn, launcherFolder, spacer, accountWidget, discord, website);
 
     }
 
@@ -104,8 +106,8 @@ public class LeftPanel extends VBox {
     private VBox createIcon(String resourcePath, String tooltip, boolean isLogo, String url, boolean isAuth, boolean isSettings) {
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
-        box.setPrefSize(34, 34);
-        box.setMaxSize(34, 34);
+        box.setPrefSize(42, 42);
+        box.setMaxSize(42, 42);
 
         String baseStyle = isLogo
             ? "-fx-background-color: #1a1a1a; -fx-background-radius: 8; -fx-border-color: #2a2a2a; -fx-border-radius: 8; -fx-border-width: 0.5;"
@@ -115,8 +117,8 @@ public class LeftPanel extends VBox {
         try {
             Image img = new Image(getClass().getClassLoader().getResourceAsStream(resourcePath));
             ImageView iv = new ImageView(img);
-            iv.setFitWidth(isLogo ? 18 : 16);
-            iv.setFitHeight(isLogo ? 18 : 16);
+            iv.setFitWidth(isLogo ? 22 : 20);
+            iv.setFitHeight(isLogo ? 22 : 20);
             iv.setPreserveRatio(true);
             box.getChildren().add(iv);
         } catch (Exception e) {

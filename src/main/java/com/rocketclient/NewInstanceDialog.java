@@ -49,13 +49,10 @@ public class NewInstanceDialog {
         Label loaderValue = new Label(loaderLabel(loader) + "  \u00b7  " + mcVersion);
         loaderValue.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono';");
 
-        // Simple built-in icon picker: cycles through the icon set on click.
-        int[] iconIndex = { indexOf(selectedIcon[0]) };
-        iconBox.setOnMouseClicked(e -> {
-            iconIndex[0] = (iconIndex[0] + 1) % InstanceManager.BUILT_IN_ICONS.length;
-            selectedIcon[0] = InstanceManager.BUILT_IN_ICONS[iconIndex[0]];
+        iconBox.setOnMouseClicked(e -> IconPickerWindow.open(instanceManager, chosen -> {
+            selectedIcon[0] = chosen;
             loadIcon(iconPreview, selectedIcon[0]);
-        });
+        }));
 
         Button cancelBtn = new Button("Cancel");
         cancelBtn.setStyle(dialogBtnStyle());
@@ -98,18 +95,8 @@ public class NewInstanceDialog {
     }
 
     private static void loadIcon(ImageView iv, String path) {
-        try {
-            iv.setImage(new Image(NewInstanceDialog.class.getClassLoader().getResourceAsStream(path)));
-        } catch (Exception e) {
-            System.out.println("Could not load instance icon " + path + ": " + e.getMessage());
-        }
-    }
-
-    private static int indexOf(String icon) {
-        for (int i = 0; i < InstanceManager.BUILT_IN_ICONS.length; i++) {
-            if (InstanceManager.BUILT_IN_ICONS[i].equals(icon)) return i;
-        }
-        return 0;
+        Image img = IconUtil.load(path);
+        if (img != null) iv.setImage(img);
     }
 
     private static String loaderLabel(String loader) {

@@ -246,7 +246,8 @@ public class CenterPanel extends VBox {
         iconView.setFitHeight(20);
         iconView.setPreserveRatio(true);
         try {
-            iconView.setImage(new Image(getClass().getClassLoader().getResourceAsStream(inst.icon)));
+            Image img = IconUtil.load(inst.icon);
+            if (img != null) iconView.setImage(img);
         } catch (Exception ignored) {}
 
         StackPane iconBox = new StackPane(iconView);
