@@ -94,7 +94,8 @@ public class IconPickerWindow {
         iv.setFitHeight(24);
         iv.setPreserveRatio(true);
         try {
-            iv.setImage(new Image(IconPickerWindow.class.getClassLoader().getResourceAsStream(iconPath)));
+            Image img = IconUtil.load(iconPath);
+            if (img != null) iv.setImage(img);
         } catch (Exception ignored) {}
 
         StackPane box = new StackPane(iv);

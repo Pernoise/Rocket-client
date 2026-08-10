@@ -39,7 +39,7 @@ public class SplashScreen {
 
         ImageView logo = new ImageView();
         try {
-            Image img = new Image(getClass().getClassLoader().getResourceAsStream("Images/icon.png"));
+            Image img = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
             logo.setImage(img);
             logo.setFitWidth(48);
             logo.setFitHeight(48);
@@ -62,7 +62,7 @@ public class SplashScreen {
         Label status = new Label("Initializing...");
         status.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
-        Label website = new Label("rocketclient.rocketclient.abrdns.com");
+        Label website = new Label("rocket.pernoise.workers.dev");
         website.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
 
         root.getChildren().addAll(logo, title, version, progressBar, status, website);

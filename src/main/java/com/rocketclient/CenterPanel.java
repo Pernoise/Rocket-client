@@ -51,7 +51,8 @@ public class CenterPanel extends VBox {
         "1.17.1", "1.17",
         "1.16.5", "1.16.4", "1.16.3", "1.16.2", "1.16.1", "1.16",
         "1.15.2", "1.15.1", "1.15",
-        "1.14.4", "1.14.3", "1.14.2", "1.14.1", "1.14"
+        "1.14.4", "1.14.3", "1.14.2", "1.14.1", "1.14",
+        "1.8.9"
     };
 
     public CenterPanel(AccountManager accountManager, SettingsManager settingsManager) {
@@ -92,20 +93,6 @@ public class CenterPanel extends VBox {
         loaderIcon.setPreserveRatio(true);
         setLoaderIcon(loaderIcon, true);
 
-        Button loaderBtn = new Button();
-        loaderBtn.setGraphic(loaderIcon);
-        loaderBtn.setStyle(loaderBtnStyle());
-        loaderBtn.setOnMouseEntered(e -> loaderBtn.setStyle(loaderBtnHoverStyle()));
-        loaderBtn.setOnMouseExited(e -> loaderBtn.setStyle(loaderBtnStyle()));
-        loaderBtn.setTooltip(new javafx.scene.control.Tooltip("Fabric - click to switch to Forge 1.8.9"));
-        loaderBtn.setOnAction(e -> {
-            fabricMode = !fabricMode;
-            setLoaderIcon(loaderIcon, fabricMode);
-            loaderBtn.setTooltip(new javafx.scene.control.Tooltip(
-                fabricMode ? "Fabric - click to switch to Forge 1.8.9" : "Forge 1.8.9 - click to switch to Fabric"
-            ));
-        });
-
         playBtn = new Button();
         playBtn.setStyle(playBtnStyle());
         playBtn.setMaxWidth(Double.MAX_VALUE);
@@ -119,7 +106,7 @@ public class CenterPanel extends VBox {
         versionBtn.setOnMouseEntered(e -> versionBtn.setStyle(versionBtnHoverStyle()));
         versionBtn.setOnMouseExited(e -> versionBtn.setStyle(versionBtnStyle()));
 
-        playRow = new HBox(8, loaderBtn, playBtn, versionBtn);
+        playRow = new HBox(8, playBtn, versionBtn);
         playRow.setMaxWidth(Double.MAX_VALUE);
         playRow.setAlignment(Pos.CENTER);
         playRow.setVisible(false);
@@ -188,7 +175,8 @@ public class CenterPanel extends VBox {
         for (String v : VERSIONS) {
             dropdownContent.getChildren().add(dropdownRow(v, () -> {
                 closeDropdown();
-                NewInstanceDialog.open(instanceManager, v, fabricMode ? "fabric" : "forge", created -> {
+                String loader = v.equals("1.8.9") ? "forge" : "fabric";
+                NewInstanceDialog.open(instanceManager, v, loader, created -> {
                     selectInstance(created);
                     refreshRecentRow();
                 });
@@ -283,18 +271,6 @@ public class CenterPanel extends VBox {
         if (hours < 24) return hours + "h ago";
         long days = hours / 24;
         return days + "d ago";
-    }
-
-    private String loaderBtnStyle() {
-        return "-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; " +
-            "-fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; " +
-            "-fx-cursor: hand; -fx-padding: 14 10;";
-    }
-
-    private String loaderBtnHoverStyle() {
-        return "-fx-background-color: #161616; -fx-border-color: #1a1a1a; " +
-            "-fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; " +
-            "-fx-cursor: hand; -fx-padding: 14 10;";
     }
 
     private String playBtnStyle() {
