@@ -61,7 +61,9 @@ public class LeftPanel extends VBox {
         javafx.scene.layout.StackPane avatarBox = new javafx.scene.layout.StackPane();
         avatarBox.setPrefSize(34, 34);
         avatarBox.setMaxSize(34, 34);
-        avatarBox.setStyle("-fx-background-color: #161616; -fx-background-radius: 8;");
+        avatarBox.setStyle("-fx-background-color: #161616; -fx-background-radius: 8; -fx-cursor: hand;");
+        avatarBox.setOnMouseClicked(e -> openSkinPanel());
+        Tooltip.install(avatarBox, new Tooltip("Skin & Cape"));
 
         try {
             String avatarUrl = "https://skins.manacube.com/avatars/" + acc.uuid;
@@ -96,7 +98,6 @@ public class LeftPanel extends VBox {
 
         Platform.runLater(() -> accountWidget.getChildren().addAll(avatarBox, nameLabel));
     }
-
     private Label fallbackAvatarLabel() {
         Label fallback = new Label("?");
         fallback.setStyle("-fx-text-fill: #555555; -fx-font-size: 14; -fx-font-family: 'JetBrains Mono';");
@@ -153,6 +154,10 @@ public class LeftPanel extends VBox {
         RocketWindowChrome.apply(popup, "LOGIN", authPanel, 400, 500, this::refreshAccountWidget);
         popup.centerOnScreen();
         popup.showAndWait();
+    }
+
+    private void openSkinPanel() {
+        SkinManagerWindow.open(accountManager);
     }
 
     private void openSettingsPanel() {
