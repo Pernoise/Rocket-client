@@ -64,6 +64,12 @@ public class SettingsPanel extends VBox {
     }
 
     private VBox buildLaunchPanel() {
+        // Self-correct a stale settings.json saved before these became mutually exclusive.
+        if (settings.hideLauncher && settings.closeLauncher) {
+            settings.hideLauncher = false;
+            settings.save();
+        }
+
         VBox panel = new VBox(16);
         panel.setPadding(new Insets(16, 0, 0, 0));
 
@@ -124,14 +130,53 @@ public class SettingsPanel extends VBox {
         panel.getChildren().addAll(ramSlider, ramLabel);
 
         panel.getChildren().add(sectionLabel("Launcher Behaviour"));
-        panel.getChildren().add(toggleRow("Hide launcher when Minecraft launches", settings.hideLauncher, val -> {
+        HBox hideRow = toggleRow("Hide launcher when Minecraft launches", settings.hideLauncher, val -> {
             settings.hideLauncher = val;
             settings.save();
-        }));
-        panel.getChildren().add(toggleRow("Close launcher without closing Minecraft", settings.closeLauncher, val -> {
+        });
+        HBox closeRow = toggleRow("Close launcher without closing Minecraft", settings.closeLauncher, val -> {
             settings.closeLauncher = val;
             settings.save();
+        });
+
+        // These two behaviors are mutually exclusive - only one can actually take effect when
+        // Minecraft launches (closeLauncher wins in code if both were on), so keep the UI honest
+        // by turning the other off automatically instead of letting them silently disagree.
+        Button hideToggleBtn  = toggleButtonOf(hideRow);
+        Button closeToggleBtn = toggleButtonOf(closeRow);
+        hideToggleBtn.setOnAction(e -> {
+            settings.hideLauncher = !settings.hideLauncher;
+            setToggleState(hideToggleBtn, settings.hideLauncher);
+            if (settings.hideLauncher && settings.closeLauncher) {
+                settings.closeLauncher = false;
+                setToggleState(closeToggleBtn, false);
+            }
+            settings.save();
+        });
+        closeToggleBtn.setOnAction(e -> {
+            settings.closeLauncher = !settings.closeLauncher;
+            setToggleState(closeToggleBtn, settings.closeLauncher);
+            if (settings.closeLauncher && settings.hideLauncher) {
+                settings.hideLauncher = false;
+                setToggleState(hideToggleBtn, false);
+            }
+            settings.save();
+        });
+
+        panel.getChildren().add(hideRow);
+        panel.getChildren().add(closeRow);
+        panel.getChildren().add(toggleRow("Enable system tray icon (restart required)", settings.enableTray, val -> {
+            settings.enableTray = val;
+            settings.save();
         }));
+
+        if (StartupManager.isSupported()) {
+            panel.getChildren().add(toggleRow("Launch Rocket Client on system startup", settings.launchOnStartup, val -> {
+                settings.launchOnStartup = val;
+                settings.save();
+                StartupManager.setEnabled(val);
+            }));
+        }
 
 
 
@@ -161,7 +206,7 @@ public class SettingsPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
         panel.setAlignment(Pos.TOP_LEFT);
 
-        Label version = new Label("Rocket Client — Beta v0.8");
+        Label version = new Label("Rocket Client — Beta v0.9");
         version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
         Label desc = new Label("A modern, lightweight Minecraft launcher built with love and.. Java");
@@ -232,6 +277,19 @@ public class SettingsPanel extends VBox {
         Label l = new Label(text.toUpperCase());
         l.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
         return l;
+    }
+
+    /** Finds the toggle Button inside a row built by toggleRow(), so its state can be controlled externally. */
+    private Button toggleButtonOf(HBox row) {
+        return (Button) row.getChildren().stream()
+            .filter(n -> n instanceof Button)
+            .findFirst()
+            .orElseThrow();
+    }
+
+    private void setToggleState(Button toggle, boolean on) {
+        toggle.setText(on ? "ON" : "OFF");
+        toggle.setStyle(on ? toggleOnStyle() : toggleOffStyle());
     }
 
     private HBox toggleRow(String text, boolean initial, java.util.function.Consumer<Boolean> onChange) {

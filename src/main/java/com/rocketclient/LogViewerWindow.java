@@ -42,8 +42,24 @@ public class LogViewerWindow {
 
         Path[] currentPath = { LAUNCHER_LOG };
 
+        Button copyBtn = new Button("Copy Log");
+        copyBtn.setStyle(secondaryBtnStyle());
+        copyBtn.setOnAction(e -> {
+            StringBuilder sb = new StringBuilder();
+            for (javafx.scene.Node node : logLines.getChildren()) {
+                if (node instanceof Label label) {
+                    sb.append(label.getText()).append("\n");
+                }
+            }
+            javafx.scene.input.ClipboardContent cc = new javafx.scene.input.ClipboardContent();
+            cc.putString(sb.toString());
+            javafx.scene.input.Clipboard.getSystemClipboard().setContent(cc);
+            copyBtn.setText("Copied!");
+        });
+
         Runnable reload = () -> {
             loadLog(logLines, currentPath[0]);
+            copyBtn.setText("Copy Log");
             Platform.runLater(() -> logScroll.setVvalue(1.0));
         };
 
@@ -54,7 +70,9 @@ public class LogViewerWindow {
         });
         mcTab.setOnAction(e -> {
             setActiveTab(mcTab, launcherTab);
-            currentPath[0] = Files.exists(MC_LOG) ? MC_LOG : FORGE_LOG;
+            currentPath[0] = MinecraftLauncher.lastLogsDir != null
+                ? MinecraftLauncher.lastLogsDir.resolve("minecraft-latest.log")
+                : (Files.exists(MC_LOG) ? MC_LOG : FORGE_LOG);
             reload.run();
         });
 
@@ -82,7 +100,7 @@ public class LogViewerWindow {
         HBox spacerRow = new HBox();
         HBox.setHgrow(spacerRow, Priority.ALWAYS);
 
-        HBox btnRow = new HBox(8, clearBtn, spacerRow, openFolderBtn, closeBtn);
+        HBox btnRow = new HBox(8, clearBtn, copyBtn, spacerRow, openFolderBtn, closeBtn);
 
         VBox root = new VBox(12, tabRow, logScroll, btnRow);
         root.setPadding(new Insets(20));

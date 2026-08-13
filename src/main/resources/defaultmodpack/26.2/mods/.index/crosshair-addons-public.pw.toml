@@ -1,0 +1,21 @@
+filename = 'CrosshairAddons-2.1.4-26.2.jar'
+name = 'Crosshair Addons Public'
+side = 'client'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '2.1.4-26.2'
+
+[download]
+hash = '1bc2e2c90d29f3ea6cd70e17538ac9ab9d74330382f58f68321cf0b8a397eb80ba4b780f19cd8bb3ce1a6d43ff09045aa11c8806f6d85f1809656fc49cb65795'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/QrKEZXN9/versions/jTmDvZTS/CrosshairAddons-2.1.4-26.2.jar'
+
+[update.modrinth]
+mod-id = 'QrKEZXN9'
+version = 'jTmDvZTS'
+
+[[x-prismlauncher-dependencies]]
+addonId = '7P86n6Vg'
+type = 'REQUIRED'

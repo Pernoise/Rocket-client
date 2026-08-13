@@ -32,6 +32,7 @@ public class Main extends Application {
         AccountManager accountManager   = new AccountManager();
         SettingsManager settingsManager = new SettingsManager();
         settingsManager.load();
+        LogBanner.print(settingsManager);
 
         SplashScreen splash = new SplashScreen(() -> {
             DiscordRPC.start(settingsManager);
@@ -46,13 +47,34 @@ public class Main extends Application {
             minimizeBtn.setOnAction(e -> stage.setIconified(true));
 
             final boolean[] maximized = {false};
+            final double[] preMaximizeBounds = new double[4]; // x, y, width, height
+
             Button maximizeBtn = new Button("[]");
             maximizeBtn.setStyle(titleBtnStyle());
             maximizeBtn.setOnMouseEntered(e -> maximizeBtn.setStyle(titleBtnHoverStyle()));
             maximizeBtn.setOnMouseExited(e -> maximizeBtn.setStyle(titleBtnStyle()));
             maximizeBtn.setOnAction(e -> {
                 maximized[0] = !maximized[0];
-                stage.setMaximized(maximized[0]);
+                if (maximized[0]) {
+                    preMaximizeBounds[0] = stage.getX();
+                    preMaximizeBounds[1] = stage.getY();
+                    preMaximizeBounds[2] = stage.getWidth();
+                    preMaximizeBounds[3] = stage.getHeight();
+                    // Snap to the screen's *visual* bounds (excludes the taskbar) so this reads
+                    // as a normal windowed maximize, not true OS fullscreen covering everything.
+                    javafx.geometry.Rectangle2D visual = javafx.stage.Screen
+                        .getScreensForRectangle(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight())
+                        .get(0).getVisualBounds();
+                    stage.setX(visual.getMinX());
+                    stage.setY(visual.getMinY());
+                    stage.setWidth(visual.getWidth());
+                    stage.setHeight(visual.getHeight());
+                } else {
+                    stage.setX(preMaximizeBounds[0]);
+                    stage.setY(preMaximizeBounds[1]);
+                    stage.setWidth(preMaximizeBounds[2]);
+                    stage.setHeight(preMaximizeBounds[3]);
+                }
                 maximizeBtn.setText(maximized[0] ? "[-]" : "[]");
             });
 
@@ -79,7 +101,7 @@ public class Main extends Application {
 
             titleBar.setOnMousePressed(e -> { xOffset = e.getSceneX(); yOffset = e.getSceneY(); });
             titleBar.setOnMouseDragged(e -> {
-                if (!stage.isMaximized()) {
+                if (!maximized[0]) {
                     stage.setX(e.getScreenX() - xOffset);
                     stage.setY(e.getScreenY() - yOffset);
                 }
@@ -101,8 +123,82 @@ public class Main extends Application {
             scene.getStylesheets().add(getClass().getClassLoader().getResource("css/theme.css").toExternalForm());
             stage.setScene(scene);
             stage.setResizable(true);
-            stage.setMinWidth(1320);
-            stage.setMinHeight(770);
+            stage.setMinWidth(960);
+            stage.setMinHeight(600);
+
+            // Undecorated/transparent stages get no OS-provided resize borders, so drag-to-resize
+            // has to be done by hand: watch the mouse near the window edges and drag width/height
+            // ourselves. Top edge is intentionally excluded - it overlaps the title bar's own
+            // drag-to-move handlers above, and fighting over the same pixels there gets janky.
+            final double RESIZE_MARGIN = 6;
+            final Object[] resizeState = { null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            // [0]=edge ("L","R","B","BL","BR",null), [1]=startScreenX, [2]=startScreenY,
+            // [3]=startStageX, [4]=startStageY, [5]=startWidth, [6]=startHeight
+
+            java.util.function.BiFunction<Double, Double, String> detectEdge = (x, y) -> {
+                double w = scene.getWidth(), h = scene.getHeight();
+                boolean left = x < RESIZE_MARGIN, right = x > w - RESIZE_MARGIN, bottom = y > h - RESIZE_MARGIN;
+                if (bottom && left) return "BL";
+                if (bottom && right) return "BR";
+                if (left) return "L";
+                if (right) return "R";
+                if (bottom) return "B";
+                return null;
+            };
+
+            scene.setOnMouseMoved(e -> {
+                if (maximized[0]) { scene.setCursor(javafx.scene.Cursor.DEFAULT); return; }
+                String edge = detectEdge.apply(e.getX(), e.getY());
+                javafx.scene.Cursor cursor = switch (edge == null ? "" : edge) {
+                    case "L" -> javafx.scene.Cursor.W_RESIZE;
+                    case "R" -> javafx.scene.Cursor.E_RESIZE;
+                    case "B" -> javafx.scene.Cursor.S_RESIZE;
+                    case "BL" -> javafx.scene.Cursor.SW_RESIZE;
+                    case "BR" -> javafx.scene.Cursor.SE_RESIZE;
+                    default -> javafx.scene.Cursor.DEFAULT;
+                };
+                scene.setCursor(cursor);
+            });
+            scene.setOnMousePressed(e -> {
+                if (maximized[0]) { resizeState[0] = null; return; }
+                resizeState[0] = detectEdge.apply(e.getX(), e.getY());
+                if (resizeState[0] != null) {
+                    resizeState[1] = e.getScreenX();
+                    resizeState[2] = e.getScreenY();
+                    resizeState[3] = stage.getX();
+                    resizeState[4] = stage.getY();
+                    resizeState[5] = stage.getWidth();
+                    resizeState[6] = stage.getHeight();
+                }
+            });
+            scene.setOnMouseDragged(e -> {
+                if (resizeState[0] == null) return;
+                double dx = e.getScreenX() - (double) resizeState[1];
+                double dy = e.getScreenY() - (double) resizeState[2];
+                double startX = (double) resizeState[3], startY = (double) resizeState[4];
+                double startW = (double) resizeState[5], startH = (double) resizeState[6];
+                double newW = startW, newH = startH, newX = startX, newY = startY;
+
+                switch ((String) resizeState[0]) {
+                    case "R" -> newW = startW + dx;
+                    case "L" -> { newW = startW - dx; newX = startX + dx; }
+                    case "B" -> newH = startH + dy;
+                    case "BR" -> { newW = startW + dx; newH = startH + dy; }
+                    case "BL" -> { newW = startW - dx; newX = startX + dx; newH = startH + dy; }
+                }
+
+                newW = Math.max(stage.getMinWidth(), newW);
+                newH = Math.max(stage.getMinHeight(), newH);
+                if (resizeState[0].equals("L") || resizeState[0].equals("BL")) {
+                    if (newW <= stage.getMinWidth()) newX = startX + (startW - stage.getMinWidth());
+                }
+
+                stage.setWidth(newW);
+                stage.setHeight(newH);
+                stage.setX(newX);
+                stage.setY(newY);
+            });
+            scene.setOnMouseReleased(e -> resizeState[0] = null);
 
             try {
                 Image icon = new Image(getClass().getClassLoader().getResourceAsStream("icons/rocket-launch.png"));
@@ -112,7 +208,9 @@ public class Main extends Application {
             }
 
             stage.show();
-            TrayManager.init(stage);
+            if (settingsManager.enableTray) {
+                TrayManager.init(stage);
+            }
 
             if (FirstLaunchDialog.isFirstLaunch()) {
                 Platform.runLater(() -> FirstLaunchDialog.show());

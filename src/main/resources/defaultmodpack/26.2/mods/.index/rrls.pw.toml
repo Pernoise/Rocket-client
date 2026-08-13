@@ -1,0 +1,21 @@
+filename = 'rrls-5.2.8+mc.26.2.jar'
+name = 'Remove Reloading Screen'
+side = 'client'
+x-prismlauncher-loaders = [ 'neoforge', 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.2' ]
+x-prismlauncher-release-type = 'beta'
+x-prismlauncher-version-number = '5.2.8+mc26.2'
+
+[download]
+hash = '19e5e346de40f92a8e821bdaa1ddefd342b4f6b56e0bf526a24a08f8bdb8ef88cab1f6ddc893b092bdad196f24a31d1df0d006808a2d69689774cd2e8a503b58'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/ZP7xHXtw/versions/DVwuMj1w/rrls-5.2.8%2Bmc.26.2.jar'
+
+[update.modrinth]
+mod-id = 'ZP7xHXtw'
+version = 'DVwuMj1w'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'ohNO6lps'
+type = 'OPTIONAL'

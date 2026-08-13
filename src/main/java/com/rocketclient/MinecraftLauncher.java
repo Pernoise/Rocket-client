@@ -19,6 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MinecraftLauncher {
 
     private static final Path MC_DIR     = Paths.get(System.getProperty("user.home"), ".rocketclient", "minecraft");
+
+    /** Set on every launch so LogViewerWindow can show the log of whichever instance ran most recently. */
+    public static volatile Path lastLogsDir = null;
     private static final Path VERSIONS   = MC_DIR.resolve("versions");
     private static final Path LIBRARIES  = MC_DIR.resolve("libraries");
     private static final Path ASSETS     = MC_DIR.resolve("assets");
@@ -29,7 +32,24 @@ public class MinecraftLauncher {
     private static final String VERSION_MANIFEST = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     private static final String FABRIC_META      = "https://meta.fabricmc.net/v2/versions/loader";
 
-    public static void launch(String mcVersion, AccountManager.Account account, SettingsManager settings, Consumer<String> log) throws Exception {
+    public static void launch(InstanceManager.Instance instance, AccountManager.Account account, SettingsManager settings, Consumer<String> log) throws Exception {
+        String mcVersion = instance.mcVersion;
+        Path gameDir = instance.dir();
+        lastLogsDir = instance.logsDir(); // so LogViewerWindow's "Minecraft Log" tab follows whichever instance ran last
+        Files.createDirectories(gameDir);
+        Files.createDirectories(instance.modsDir());
+        Files.createDirectories(instance.configDir());
+        Files.createDirectories(instance.savesDir());
+        Files.createDirectories(instance.resourcePacksDir());
+        Files.createDirectories(instance.shaderPacksDir());
+        Files.createDirectories(instance.logsDir());
+
+        log.accept("== Rocket Client ==");
+        log.accept("Instance: " + instance.name + "  |  Version: " + mcVersion + "  |  Loader: " + instance.loader);
+        log.accept("Account: " + account.username + " (" + account.type + ")");
+        log.accept("RAM: " + settings.ramMb + " MB  |  Java: " + settings.javaPath);
+        log.accept("");
+
         Files.createDirectories(VERSIONS);
         Files.createDirectories(LIBRARIES);
         Files.createDirectories(ASSETS);
@@ -56,8 +76,10 @@ public class MinecraftLauncher {
         log.accept("Checking Java runtime...");
         String javaExec = "java".equals(settings.javaPath) ? JavaManager.getJavaForVersion(mcVersion, log) : settings.javaPath;
 
+        DefaultModpackManager.installFor(mcVersion, gameDir, log);
+
         log.accept("Launching Minecraft...");
-        startProcess(mcVersion, account, settings, clientJar, fabricJar, libs, versionJson, javaExec, log);
+        startProcess(mcVersion, gameDir, account, settings, clientJar, fabricJar, libs, versionJson, javaExec, log);
     }
 
     private static String getVersionUrl(String mcVersion, Consumer<String> log) throws Exception {
@@ -283,7 +305,7 @@ public class MinecraftLauncher {
         return lastJar != null ? lastJar : fabricJar;
     }
 
-    private static void startProcess(String mcVersion, AccountManager.Account account,
+    private static void startProcess(String mcVersion, Path gameDir, AccountManager.Account account,
         SettingsManager settings, Path clientJar, Path fabricJar,
         List<Path> libs, JsonObject versionJson, String javaExec, Consumer<String> log) throws Exception {
 
@@ -334,14 +356,14 @@ public class MinecraftLauncher {
             cmd.add("--uuid");        cmd.add(account.uuid);
             cmd.add("--accessToken"); cmd.add(account.accessToken);
             cmd.add("--version");     cmd.add(mcVersion);
-            cmd.add("--gameDir");     cmd.add(MC_DIR.toAbsolutePath().toString());
+            cmd.add("--gameDir");     cmd.add(gameDir.toAbsolutePath().toString());
             cmd.add("--assetsDir");   cmd.add(ASSETS.toAbsolutePath().toString());
             cmd.add("--assetIndex");  cmd.add(versionJson.getAsJsonObject("assetIndex").get("id").getAsString());
             cmd.add("--userType");    cmd.add(account.type.equals("microsoft") ? "msa" : "legacy");
 
             log.accept("Starting Minecraft process...");
             ProcessBuilder pb = new ProcessBuilder(cmd);
-            java.nio.file.Files.createDirectories(MC_DIR.resolve("logs")); pb.redirectErrorStream(true); pb.redirectOutput(MC_DIR.resolve("logs").resolve("minecraft-latest.log").toFile());
+            java.nio.file.Files.createDirectories(gameDir.resolve("logs")); pb.redirectErrorStream(true); pb.redirectOutput(gameDir.resolve("logs").resolve("minecraft-latest.log").toFile());
             Process process = pb.start();
             log.accept("Minecraft launched!");
 

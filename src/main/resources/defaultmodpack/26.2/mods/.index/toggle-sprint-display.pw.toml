@@ -1,0 +1,18 @@
+filename = 'toggle-sprint-display-2.0.2.jar'
+name = 'Toggle Sprint Display'
+side = 'client'
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '2.0.2'
+
+[download]
+hash = '0632a96265a3ea08aaae49b6680a1ecf9559e708fce8227c2b2fb309cd6204e101dfab82014b61a556d80bd617866315b1586662cf06ddc486cbc6793dfc5b15'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/shVMaevq/versions/RfqFKdEm/toggle-sprint-display-2.0.2.jar'
+
+[update.modrinth]
+mod-id = 'shVMaevq'
+version = 'RfqFKdEm'

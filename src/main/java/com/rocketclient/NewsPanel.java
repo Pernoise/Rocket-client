@@ -18,6 +18,15 @@ public class NewsPanel extends VBox {
 
         VBox cards = new VBox(8);
         cards.getChildren().addAll(
+            newsCard("12/08/2026", "Instances now fully isolated: mods, config, and saves no longer shared between versions."),
+            newsCard("12/08/2026", "Fixed Java version mismatch crash on Minecraft 26.2."),
+            newsCard("12/08/2026", "Default modpack support: bundled mods/config auto-sync on launch for supported versions."),
+            newsCard("12/08/2026", "Upload Log button added for sharing crash logs."),
+            newsCard("12/08/2026", "Copy Log button added to the Logs window."),
+            newsCard("12/08/2026", "Launch log now detects common crashes (GPU driver, mismatched OptiFine) and shows a plain-language tip."),
+            newsCard("12/08/2026", "Skin & Cape manager added: view and equip owned skins/capes from the launcher."),
+            newsCard("12/08/2026", "Account tokens now encrypted at rest."),
+            newsCard("12/08/2026", "1.8.9 added to the version list; loader is now chosen automatically per version."),
             newsCard("08/07/2026", "Microsoft login now working via browser OAuth flow."),
             newsCard("08/07/2026", "New launcher icon."),
             newsCard("06/07/2026", "Account avatar and username shown in left panel."),

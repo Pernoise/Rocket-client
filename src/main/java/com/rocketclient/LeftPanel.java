@@ -62,6 +62,8 @@ public class LeftPanel extends VBox {
         avatarBox.setPrefSize(34, 34);
         avatarBox.setMaxSize(34, 34);
         avatarBox.setStyle("-fx-background-color: #161616; -fx-background-radius: 8; -fx-cursor: hand;");
+        avatarBox.setOnMouseEntered(e -> avatarBox.setStyle("-fx-background-color: #222222; -fx-background-radius: 8; -fx-cursor: hand;"));
+        avatarBox.setOnMouseExited(e -> avatarBox.setStyle("-fx-background-color: #161616; -fx-background-radius: 8; -fx-cursor: hand;"));
         avatarBox.setOnMouseClicked(e -> openSkinPanel());
         Tooltip.install(avatarBox, new Tooltip("Skin & Cape"));
 

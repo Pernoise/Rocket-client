@@ -351,7 +351,7 @@ public class CenterPanel extends VBox {
         Thread thread = new Thread(() -> {
             try {
                 if (useFabric) {
-                    MinecraftLauncher.launch(version, account, settingsManager, logWindow::appendLog);
+                    MinecraftLauncher.launch(instanceAtLaunch, account, settingsManager, logWindow::appendLog);
                 } else {
                     ForgeLauncher.launch(account, settingsManager, logWindow::appendLog);
                 }

@@ -1,0 +1,21 @@
+filename = 'fullbrightnesstoggle-26.2.0-4.5.jar'
+name = 'Full Brightness Toggle'
+side = 'client'
+x-prismlauncher-loaders = [ 'neoforge', 'forge', 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '26.2.0-4.5-fabric+forge+neo'
+
+[download]
+hash = 'd4151e478956b45c16f3e989f99f251ccd4411098947fbf763ef00f1a8829b5d7b6cefb7bba68a5bd88f13ecc2af4c5931bd8032875608725eebca849989fa84'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/aEK1KhsC/versions/iPOhXB6m/fullbrightnesstoggle-26.2.0-4.5.jar'
+
+[update.modrinth]
+mod-id = 'aEK1KhsC'
+version = 'iPOhXB6m'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'e0M1UDsY'
+type = 'REQUIRED'

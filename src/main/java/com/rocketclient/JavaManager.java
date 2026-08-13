@@ -22,7 +22,10 @@ public class JavaManager {
     }
 
     private static int getRequiredJava(String mcVersion) {
-        if (mcVersion.startsWith("26.") || mcVersion.startsWith("25.")) return 21;
+        // Class file version 69 (Java 25) is required to run 26.x - Java 21 (classfile 65)
+        // can't load it, which is exactly the UnsupportedClassVersionError this used to cause.
+        if (mcVersion.startsWith("26.")) return 25;
+        if (mcVersion.startsWith("25.")) return 21;
         String[] parts = mcVersion.split("\\.");
         if (parts.length < 2) return 8;
         try {

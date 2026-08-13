@@ -1,0 +1,18 @@
+filename = 'papi-fabric-26.2-1.2.0.jar'
+name = 'Put A Plug In it! (PAPI)'
+side = 'both'
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'fabric-26.2-1.2.0'
+
+[download]
+hash = '3f7f02e38235905d85755e7984e0b10523912a27a6b1a18e91c160a7e0787fd9134e8f58f19dac5617882ef465140b31cea788b1ac8ca7676ae56473bbcd0fd9'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/xedaBnSm/versions/DefjMBJw/papi-fabric-26.2-1.2.0.jar'
+
+[update.modrinth]
+mod-id = 'xedaBnSm'
+version = 'DefjMBJw'

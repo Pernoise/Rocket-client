@@ -69,18 +69,19 @@ public class SkinManagerWindow {
             return;
         }
 
-        SkinViewer3D viewer3d = new SkinViewer3D(160, 300);
+        ImageView bodyRender = new ImageView();
+        bodyRender.setFitWidth(180);
+        bodyRender.setFitHeight(340);
+        bodyRender.setPreserveRatio(true);
+        bodyRender.setSmooth(false); // upscaled pixel art stays crisp instead of blurring
 
         Label modelLabel = new Label("");
         modelLabel.setStyle("-fx-text-fill: #888888; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
 
-        Label dragHint = new Label("drag to rotate");
-        dragHint.setStyle("-fx-text-fill: #444444; -fx-font-size: 9; -fx-font-family: 'JetBrains Mono';");
-
-        VBox previewBox = new VBox(6, viewer3d, modelLabel, dragHint);
+        VBox previewBox = new VBox(6, bodyRender, modelLabel);
         previewBox.setAlignment(Pos.TOP_CENTER);
         previewBox.setPadding(new Insets(12));
-        previewBox.setPrefWidth(200);
+        previewBox.setPrefWidth(220);
         previewBox.setStyle("-fx-background-color: #141414; -fx-background-radius: 8; -fx-border-color: #1a1a1a; -fx-border-radius: 8; -fx-border-width: 1;");
 
         Label status = new Label("Loading your skins and capes...");
@@ -96,6 +97,7 @@ public class SkinManagerWindow {
         VBox listsColumn = new VBox(12, skinsHeader, skinsList, capesHeader, capesList);
 
         ScrollPane scroll = new ScrollPane(listsColumn);
+        scroll.getStyleClass().add("rocket-scroll");
         scroll.setFitToWidth(true);
         scroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
         scroll.setPrefHeight(320);
@@ -117,9 +119,15 @@ public class SkinManagerWindow {
         slimBtn.setStyle(toggleStyle(false));
         classicBtn.setOnAction(e -> { classicBtn.setStyle(toggleStyle(true)); slimBtn.setStyle(toggleStyle(false)); });
         slimBtn.setOnAction(e -> { slimBtn.setStyle(toggleStyle(true)); classicBtn.setStyle(toggleStyle(false)); });
+        classicBtn.setOnMouseEntered(e -> classicBtn.setStyle(toggleHoverStyle(classicBtn.isSelected())));
+        classicBtn.setOnMouseExited(e -> classicBtn.setStyle(toggleStyle(classicBtn.isSelected())));
+        slimBtn.setOnMouseEntered(e -> slimBtn.setStyle(toggleHoverStyle(slimBtn.isSelected())));
+        slimBtn.setOnMouseExited(e -> slimBtn.setStyle(toggleStyle(slimBtn.isSelected())));
 
         Button uploadBtn = new Button("Upload New Skin");
         uploadBtn.setStyle(primaryBtnStyle());
+        uploadBtn.setOnMouseEntered(e -> uploadBtn.setStyle(primaryBtnHoverStyle()));
+        uploadBtn.setOnMouseExited(e -> uploadBtn.setStyle(primaryBtnStyle()));
         uploadBtn.setMaxWidth(Double.MAX_VALUE);
 
         HBox uploadRow = new HBox(8, uploadBtn, classicBtn, slimBtn);
@@ -129,7 +137,7 @@ public class SkinManagerWindow {
         root.getChildren().addAll(title, mainRow, uploadRow);
 
         Runnable[] reloadHolder = new Runnable[1];
-        reloadHolder[0] = () -> loadProfile(acc, status, skinsList, capesList, modelLabel, viewer3d, reloadHolder);
+        reloadHolder[0] = () -> loadProfile(acc, status, skinsList, capesList, modelLabel, bodyRender, reloadHolder);
 
         uploadBtn.setOnAction(e -> {
             FileChooser chooser = new FileChooser();
@@ -168,7 +176,7 @@ public class SkinManagerWindow {
     }
 
     private static void loadProfile(AccountManager.Account acc, Label status, VBox skinsList, VBox capesList,
-                                     Label modelLabel, SkinViewer3D viewer3d, Runnable[] reloadHolder) {
+                                     Label modelLabel, ImageView bodyRender, Runnable[] reloadHolder) {
         new Thread(() -> {
             try {
                 MinecraftServicesClient.Profile profile = MinecraftServicesClient.fetchProfile(acc.accessToken);
@@ -182,13 +190,8 @@ public class SkinManagerWindow {
                     boolean slim = activeSkin != null && "SLIM".equalsIgnoreCase(activeSkin.variant);
                     modelLabel.setText(activeSkin == null ? "" : (slim ? "Slim model" : "Classic model"));
 
-                    String activeCapeUrl = profile.capes.stream()
-                        .filter(MinecraftServicesClient.CapeEntry::active)
-                        .map(c -> c.url)
-                        .findFirst().orElse(null);
-
                     if (activeSkin != null) {
-                        viewer3d.setSkin(activeSkin.url, activeCapeUrl, slim);
+                        refreshBodyRender(bodyRender, acc.uuid);
                     }
 
                     skinsList.getChildren().clear();
@@ -223,7 +226,7 @@ public class SkinManagerWindow {
         HBox row = rowBase();
 
         // Front of the head, from the skin's own texture (8,8 8x8 in the 64x64 sheet).
-        ImageView thumb = texturePreview(skin.url, 8, 8, 8, 8, 28, 28);
+        ImageView thumb = texturePreview(skin.url, 8, 8, 8, 8, 40, 40);
         thumb.setStyle("-fx-background-color: #0a0a0a;");
 
         Label name = new Label((skin.variant != null ? skin.variant : "Skin") + (skin.active() ? " (equipped)" : ""));
@@ -233,6 +236,8 @@ public class SkinManagerWindow {
         Button equipBtn = new Button(skin.active() ? "Equipped" : "Equip");
         equipBtn.setStyle(skin.active() ? equippedBtnStyle() : selectBtnStyle());
         equipBtn.setDisable(skin.active());
+        equipBtn.setOnMouseEntered(e -> { if (!equipBtn.isDisabled()) equipBtn.setStyle(selectBtnHoverStyle()); });
+        equipBtn.setOnMouseExited(e -> { if (!equipBtn.isDisabled()) equipBtn.setStyle(selectBtnStyle()); });
         equipBtn.setOnAction(e -> {
             equipBtn.setDisable(true);
             equipBtn.setText("Equipping...");
@@ -257,7 +262,7 @@ public class SkinManagerWindow {
         HBox row = rowBase();
 
         // Front panel of the cape texture (1,1 10x16 in the 64x32 sheet).
-        ImageView thumb = texturePreview(cape.url, 1, 1, 10, 16, 20, 32);
+        ImageView thumb = texturePreview(cape.url, 1, 1, 10, 16, 30, 48);
         thumb.setStyle("-fx-background-color: #0a0a0a;");
 
         Label name = new Label(cape.alias + (cape.active() ? " (equipped)" : ""));
@@ -267,6 +272,8 @@ public class SkinManagerWindow {
         Button equipBtn = new Button(cape.active() ? "Equipped" : "Equip");
         equipBtn.setStyle(cape.active() ? equippedBtnStyle() : selectBtnStyle());
         equipBtn.setDisable(cape.active());
+        equipBtn.setOnMouseEntered(e -> { if (!equipBtn.isDisabled()) equipBtn.setStyle(selectBtnHoverStyle()); });
+        equipBtn.setOnMouseExited(e -> { if (!equipBtn.isDisabled()) equipBtn.setStyle(selectBtnStyle()); });
         equipBtn.setOnAction(e -> {
             equipBtn.setDisable(true);
             equipBtn.setText("Equipping...");
@@ -295,6 +302,8 @@ public class SkinManagerWindow {
 
         Button removeBtn = new Button("Unequip");
         removeBtn.setStyle(selectBtnStyle());
+        removeBtn.setOnMouseEntered(e -> { if (!removeBtn.isDisabled()) removeBtn.setStyle(selectBtnHoverStyle()); });
+        removeBtn.setOnMouseExited(e -> { if (!removeBtn.isDisabled()) removeBtn.setStyle(selectBtnStyle()); });
         removeBtn.setOnAction(e -> {
             removeBtn.setDisable(true);
             new Thread(() -> {
@@ -309,6 +318,26 @@ public class SkinManagerWindow {
 
         row.getChildren().addAll(name, removeBtn);
         return row;
+    }
+
+    /** High-resolution full-body render (includes the equipped cape) with fallback sources if one is unreachable. */
+    private static void refreshBodyRender(ImageView bodyRender, String uuid) {
+        long t = System.currentTimeMillis();
+        String primary   = "https://crafatar.com/renders/body/" + uuid + "?overlay&scale=10&t=" + t;
+        String fallback1 = "https://vzge.me/full/720/" + uuid + "?y=180";
+        String fallback2 = "https://mc-heads.net/body/" + uuid + "/540";
+        loadWithFallback(bodyRender, new String[]{primary, fallback1, fallback2}, 0);
+    }
+
+    private static void loadWithFallback(ImageView view, String[] urls, int index) {
+        if (index >= urls.length) return;
+        Image img = new Image(urls[index], true);
+        img.errorProperty().addListener((obs, was, isError) -> {
+            if (isError) {
+                Platform.runLater(() -> loadWithFallback(view, urls, index + 1));
+            }
+        });
+        view.setImage(img);
     }
 
     /** Crops a small square/rect region out of a raw skin/cape texture and scales it up crisply. */
@@ -364,6 +393,10 @@ public class SkinManagerWindow {
         return "-fx-background-color: #1a1a1a; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 4 10; -fx-border-color: #2a2a2a; -fx-border-radius: 4; -fx-background-radius: 4;";
     }
 
+    private static String selectBtnHoverStyle() {
+        return "-fx-background-color: #262626; -fx-text-fill: #ffffff; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 4 10; -fx-border-color: #3a3a3a; -fx-border-radius: 4; -fx-background-radius: 4;";
+    }
+
     private static String equippedBtnStyle() {
         return "-fx-background-color: #101a10; -fx-text-fill: #4caf50; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-padding: 4 10; -fx-border-color: #1a2a1a; -fx-border-radius: 4; -fx-background-radius: 4;";
     }
@@ -376,9 +409,23 @@ public class SkinManagerWindow {
             "-fx-cursor: hand; -fx-padding: 10 20; -fx-opacity: 0.88;";
     }
 
+    private static String primaryBtnHoverStyle() {
+        return "-fx-background-color: #1c1c1c; -fx-text-fill: #ffffff; " +
+            "-fx-font-size: 12; -fx-font-weight: bold; -fx-font-family: 'JetBrains Mono'; " +
+            "-fx-border-color: #2a2a2a; -fx-border-width: 1; " +
+            "-fx-background-radius: 8; -fx-border-radius: 8; " +
+            "-fx-cursor: hand; -fx-padding: 10 20; -fx-opacity: 1;";
+    }
+
     private static String toggleStyle(boolean selected) {
         return "-fx-background-color: " + (selected ? "#1a1a1a" : "#0f0f0f") + "; -fx-text-fill: #ffffff; " +
             "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 10 12; " +
             "-fx-border-color: #2a2a2a; -fx-border-radius: 6; -fx-background-radius: 6;";
+    }
+
+    private static String toggleHoverStyle(boolean selected) {
+        return "-fx-background-color: " + (selected ? "#242424" : "#1a1a1a") + "; -fx-text-fill: #ffffff; " +
+            "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 10; -fx-cursor: hand; -fx-padding: 10 12; " +
+            "-fx-border-color: #3a3a3a; -fx-border-radius: 6; -fx-background-radius: 6;";
     }
 }
