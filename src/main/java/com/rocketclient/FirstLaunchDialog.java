@@ -7,11 +7,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import java.nio.file.*;
 
 public class FirstLaunchDialog {
@@ -50,52 +52,118 @@ public class FirstLaunchDialog {
 
         // Logo
         try {
-            Image img = new Image(FirstLaunchDialog.class.getClassLoader()
-                .getResourceAsStream("images/icon.png"));
+            Image img = new Image(
+                FirstLaunchDialog.class.getClassLoader()
+                    .getResourceAsStream("images/icon.png")
+            );
+
             ImageView iv = new ImageView(img);
             iv.setFitWidth(40);
             iv.setFitHeight(40);
             iv.setPreserveRatio(true);
+
             root.getChildren().add(iv);
         } catch (Exception ignored) {}
 
-        Label title = new Label("Welcome to Rocket Client Beta");
-        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
+        Label title = new Label("Welcome to Rocket Client");
+        title.setStyle(
+            "-fx-text-fill: #ffffff;" +
+            "-fx-font-size: 16;" +
+            "-fx-font-family: 'JetBrains Mono';" +
+            "-fx-font-weight: bold;" +
+            "-fx-opacity: 0.88;"
+        );
 
         Label msg = new Label(
-            "This is the first public beta of Rocket Client.\n\n" +
-            "You may encounter bugs — this is expected.\n\n" +
-            "If you find any issues, please open a ticket\n" +
-            "on our GitHub repository so we can fix them.\n\n" +
-            "Thank you for being an early tester."
+            "A lightweight, custom Minecraft launcher.\n\n" +
+            "Join the community or check out the site below."
         );
-        msg.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 12; -fx-font-family: 'JetBrains Mono'; -fx-text-alignment: center;");
+
+        msg.setStyle(
+            "-fx-text-fill: #ffffff;" +
+            "-fx-font-size: 12;" +
+            "-fx-font-family: 'JetBrains Mono';" +
+            "-fx-text-alignment: center;" +
+            "-fx-opacity: 0.8;"
+        );
+
         msg.setWrapText(true);
         msg.setMaxWidth(320);
 
-        Label link = new Label("github.com/Pernoise/Rocket-client/issues");
-        link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;");
-        link.setOnMouseEntered(e -> link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
-        link.setOnMouseExited(e  -> link.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono'; -fx-cursor: hand;"));
-        link.setOnMouseClicked(e -> BrowserUtil.open("https://github.com/Pernoise/Rocket-client/issues"));
+        HBox socialRow = new HBox(14);
+        socialRow.setAlignment(Pos.CENTER);
+
+        socialRow.getChildren().addAll(
+            socialIcon(
+                "icons/discord-logo.png",
+                "Discord",
+                "https://discord.com/invite/urHfdFdsbh"
+            ),
+            socialIcon(
+                "icons/Logo.ico",
+                "Website",
+                "https://rocket.pernoise.workers.dev/"
+            )
+        );
 
         Button btn = new Button("Let's go");
         btn.setStyle(
-            "-fx-background-color: #ffffff; -fx-text-fill: #000000; " +
-            "-fx-font-family: 'JetBrains Mono'; -fx-font-size: 13; -fx-font-weight: bold; " +
-            "-fx-background-radius: 7; -fx-cursor: hand; -fx-padding: 10 40;"
+            "-fx-background-color: #ffffff;" +
+            "-fx-text-fill: #000000;" +
+            "-fx-font-family: 'JetBrains Mono';" +
+            "-fx-font-size: 13;" +
+            "-fx-font-weight: bold;" +
+            "-fx-background-radius: 7;" +
+            "-fx-cursor: hand;" +
+            "-fx-padding: 10 40;"
         );
+
         btn.setOnAction(e -> {
             markLaunched();
             stage.close();
         });
 
-        root.getChildren().addAll(title, msg, link, btn);
+        root.getChildren().addAll(title, msg, socialRow, btn);
 
-        Scene scene = new Scene(root, 420, 380);
+        Scene scene = new Scene(root, 420, 300);
         scene.setFill(Color.TRANSPARENT);
+
         stage.setScene(scene);
         stage.centerOnScreen();
         stage.showAndWait();
+    }
+
+    private static VBox socialIcon(String iconPath, String name, String url) {
+        VBox box = new VBox(5);
+        box.setAlignment(Pos.CENTER);
+        box.setStyle("-fx-cursor: hand;");
+
+        try {
+            Image img = new Image(
+                FirstLaunchDialog.class.getClassLoader()
+                    .getResourceAsStream(iconPath)
+            );
+
+            ImageView icon = new ImageView(img);
+            icon.setFitWidth(28);
+            icon.setFitHeight(28);
+            icon.setPreserveRatio(true);
+
+            Label label = new Label(name);
+            label.setStyle(
+                "-fx-text-fill: #ffffff;" +
+                "-fx-font-size: 10;" +
+                "-fx-font-family: 'JetBrains Mono';"
+            );
+
+            box.getChildren().addAll(icon, label);
+
+            box.setOnMouseClicked(e ->
+                BrowserUtil.open(url)
+            );
+
+        } catch (Exception ignored) {}
+
+        return box;
     }
 }

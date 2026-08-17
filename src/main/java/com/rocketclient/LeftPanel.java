@@ -74,6 +74,7 @@ public class LeftPanel extends VBox {
             iv.setFitWidth(28);
             iv.setFitHeight(28);
             iv.setPreserveRatio(true);
+            iv.setSmooth(false); // avatar renders are tiny/pixel-art - bilinear upscaling just blurs them
 
             javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(28, 28);
             clip.setArcWidth(10);

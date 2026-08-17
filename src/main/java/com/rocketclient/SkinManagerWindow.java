@@ -346,6 +346,7 @@ public class SkinManagerWindow {
         iv.setFitWidth(outW);
         iv.setFitHeight(outH);
         iv.setSmooth(false); // keep pixel-art crisp instead of blurring the crop
+        iv.setCache(false);  // a cached bitmap snapshot can reintroduce filtering even with smooth=false
         iv.setPreserveRatio(false);
         Image tex = new Image(textureUrl, true);
         tex.progressProperty().addListener((obs, oldP, newP) -> {

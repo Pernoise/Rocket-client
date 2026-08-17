@@ -206,7 +206,7 @@ public class SettingsPanel extends VBox {
         panel.setPadding(new Insets(16, 0, 0, 0));
         panel.setAlignment(Pos.TOP_LEFT);
 
-        Label version = new Label("Rocket Client — Beta v0.9");
+        Label version = new Label("Rocket Client — v1.0");
         version.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
 
         Label desc = new Label("A modern, lightweight Minecraft launcher built with love and.. Java");
