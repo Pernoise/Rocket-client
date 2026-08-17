@@ -1,0 +1,21 @@
+filename = 'Clumps-fabric-1.21.5-23.0.0.1.jar'
+name = 'Clumps'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.5' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '23.0.0.1'
+
+[download]
+hash = '08b9e5c849162f5f076f33c117f39d0931afc04f475241f33e9fa9984b48c8383517e73aa51f55c22a98b4e7da27045a98fad8d4abc289278dc0e9b13accddc5'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/Wnxd13zP/versions/nH8YfRWs/Clumps-fabric-1.21.5-23.0.0.1.jar'
+
+[update.modrinth]
+mod-id = 'Wnxd13zP'
+version = 'nH8YfRWs'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

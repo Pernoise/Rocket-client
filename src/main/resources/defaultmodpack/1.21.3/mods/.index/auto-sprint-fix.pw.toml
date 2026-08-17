@@ -1,0 +1,18 @@
+filename = 'autosprintfix-1.0.0.jar'
+name = 'AutoSprintFix'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.3' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.0.0'
+
+[download]
+hash = '642266987cb703b764f7de66c50a3449bc9342d0f03b7d2cb2026d1765105447516064c02701984863c310ce9e5057ca93e9f5cff4f10fa14523788a071e9849'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/E9SxgOCE/versions/rqJnO28S/autosprintfix-1.0.0.jar'
+
+[update.modrinth]
+mod-id = 'E9SxgOCE'
+version = 'rqJnO28S'

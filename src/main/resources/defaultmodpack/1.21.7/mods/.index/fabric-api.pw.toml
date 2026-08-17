@@ -1,0 +1,18 @@
+filename = 'fabric-api-0.129.0+1.21.7.jar'
+name = 'Fabric API'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.7' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.129.0+1.21.7'
+
+[download]
+hash = '43bf6af145a6b450503a6d7e7ec9a34912bd1494969b5d8861067f0f846cf710805415fb0fbc93c9ae9f5164d45c7649342f84b4f34552b2abdd892fd3b9838e'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/P7dR8mSH/versions/JntuF9Ul/fabric-api-0.129.0%2B1.21.7.jar'
+
+[update.modrinth]
+mod-id = 'P7dR8mSH'
+version = 'JntuF9Ul'

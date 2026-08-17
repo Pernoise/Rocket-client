@@ -1,0 +1,18 @@
+filename = 'inventoryhud.fabric.1.21.3-3.4.27.jar'
+name = 'Inventory HUD +'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.3' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '3.4.27'
+
+[download]
+hash = '2e8c2f7ad78a2c4adbd97ceb12aa36c033af30b25cc7c46506926a49a88fa3779e5e99684c4062c25913caa0b5bfc109b8ad76d22e90466ac92b2615cc608982'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/Kp2uclYl/versions/LbBZZyVS/inventoryhud.fabric.1.21.3-3.4.27.jar'
+
+[update.modrinth]
+mod-id = 'Kp2uclYl'
+version = 'LbBZZyVS'

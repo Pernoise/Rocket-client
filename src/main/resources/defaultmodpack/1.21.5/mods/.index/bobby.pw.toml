@@ -1,0 +1,29 @@
+filename = 'bobby-5.2.7+mc1.21.5.jar'
+name = 'Bobby'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.5' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '5.2.7+mc1.21.5'
+
+[download]
+hash = 'bd65704f6eff8646db50b77f293e0b4f7e157d61dc565c42c1c1144371543a75f0658ce6e6dffc7f8cf629a51ef6e7dde6b8cb99f53a4f7d2540bde844c11799'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/M08ruV16/versions/FdlWKxsL/bobby-5.2.7%2Bmc1.21.5.jar'
+
+[update.modrinth]
+mod-id = 'M08ruV16'
+version = 'FdlWKxsL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'mOgUt4GM'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = '9s6osm5g'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'AANobbMI'
+type = 'OPTIONAL'

@@ -1,0 +1,25 @@
+filename = 'reeses-sodium-options-fabric-1.8.6+mc1.21.10.jar'
+name = "Reese's Sodium Options"
+side = ''
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9', '1.21.10' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'mc1.21.10-1.8.6+fabric'
+
+[download]
+hash = '3cbf1e48c0e6beb743695c5cc922dde95f4fe1b3080ba97bcd9a10c6666491b853d3f0cd071ed519a02c7a9a4d79c5d2be393ebafe25db80b48bf3ad1ca8cdb6'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/Bh37bMuy/versions/nUGhyPwZ/reeses-sodium-options-fabric-1.8.6%2Bmc1.21.10.jar'
+
+[update.modrinth]
+mod-id = 'Bh37bMuy'
+version = 'nUGhyPwZ'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'PtjYWJkn'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'AANobbMI'
+type = 'REQUIRED'

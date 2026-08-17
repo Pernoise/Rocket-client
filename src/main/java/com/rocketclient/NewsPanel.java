@@ -18,6 +18,9 @@ public class NewsPanel extends VBox {
 
         VBox cards = new VBox(8);
         cards.getChildren().addAll(
+            newsCard("17/08/2026", "Rocket Client is officially out of beta — v1.0 released."),
+            newsCard("17/08/2026", "Full version support added: every Minecraft version from 1.21.3 through 26.2 is now playable."),
+            newsCard("17/08/2026", "HUD management now built in."),
             newsCard("12/08/2026", "Instances now fully isolated: mods, config, and saves no longer shared between versions."),
             newsCard("12/08/2026", "Fixed Java version mismatch crash on Minecraft 26.2."),
             newsCard("12/08/2026", "Default modpack support: bundled mods/config auto-sync on launch for supported versions."),

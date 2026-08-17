@@ -1,0 +1,29 @@
+filename = 'hudmanager-fabric-1.4.1+mc1.21.4.jar'
+name = 'HUD Manager'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.4' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.4.1+mc1.21.4'
+
+[download]
+hash = '0dedc7db600977cc0086b67115f742827b014c2f6836ced29229a21c7c8e8b44cc8eee7f144ca906be542d1eec47bfc2beacf8dd98f6545a1e206eafd730ec5d'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/hbUrCPGQ/versions/vwuhD4pE/hudmanager-fabric-1.4.1%2Bmc1.21.4.jar'
+
+[update.modrinth]
+mod-id = 'hbUrCPGQ'
+version = 'vwuhD4pE'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'mOgUt4GM'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'ohNO6lps'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

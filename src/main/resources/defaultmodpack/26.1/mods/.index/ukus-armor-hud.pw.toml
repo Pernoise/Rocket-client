@@ -1,0 +1,21 @@
+filename = 'ukus-armor-hud-fabric-0.11.0+mc26.1.jar'
+name = "uku's Armor HUD"
+side = ''
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.1', '26.1.1', '26.1.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.11.0+mc26.1-fabric'
+
+[download]
+hash = '20f2fe916307fda8ad39906da484818fe91d59da6b6ebe24ef2cd57248584615bb77e8164d1cac029431fdd0ae856acdb345b8b5c56e3f77c1a7d953cdf4e319'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/wF189hn9/versions/zvOTqals/ukus-armor-hud-fabric-0.11.0%2Bmc26.1.jar'
+
+[update.modrinth]
+mod-id = 'wF189hn9'
+version = 'zvOTqals'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Y8uFrUil'
+type = 'REQUIRED'

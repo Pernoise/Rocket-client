@@ -1,0 +1,25 @@
+filename = 'ForgeConfigAPIPort-v21.7.0-1.21.7-Fabric.jar'
+name = 'Forge Config API Port'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.7' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = 'v21.7.0-1.21.7-Fabric'
+
+[download]
+hash = '4ca35d28245cb025c938c90540fa823d695f1d71f8763ebc3e5c37f883c42fd3203bcb3daf6d318393c4cb17d40c8d0c6c0340ff913eeb7ec316e4f69d9505bc'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/ohNO6lps/versions/mw50luix/ForgeConfigAPIPort-v21.7.0-1.21.7-Fabric.jar'
+
+[update.modrinth]
+mod-id = 'ohNO6lps'
+version = 'mw50luix'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = '5WeWGLoJ'
+type = 'OPTIONAL'

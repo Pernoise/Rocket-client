@@ -1,0 +1,21 @@
+filename = 'ukus-armor-hud-0.8.1+mc1.21.6.jar'
+name = "uku's Armor HUD"
+side = ''
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.6', '1.21.7', '1.21.8' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.8.1+mc1.21.6'
+
+[download]
+hash = '8a3cd75eb21ecd704cd928c2c443d1d5cf5dede04bd36ab058922aaae2bbfa4b5198f9f016ff65f11746ab10ed269b0a5ea45f9b9bb8986592573414a6eb8127'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/wF189hn9/versions/T4dxks62/ukus-armor-hud-0.8.1%2Bmc1.21.6.jar'
+
+[update.modrinth]
+mod-id = 'wF189hn9'
+version = 'T4dxks62'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Y8uFrUil'
+type = 'REQUIRED'

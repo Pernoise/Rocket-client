@@ -1,0 +1,18 @@
+filename = 'collective-1.21.9-8.9.jar'
+name = 'Collective'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'neoforge', 'forge', 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.21.9-8.9-fabric+forge+neo'
+
+[download]
+hash = '823992d98bcb93237e0df082a09854e6847b5456e97b1ce8a44e04731c2da20e11d144667906f51c5f2599d1eb91235062024fe98ce55c3774c1463e17b82f76'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/e0M1UDsY/versions/eJb8QANu/collective-1.21.9-8.9.jar'
+
+[update.modrinth]
+mod-id = 'e0M1UDsY'
+version = 'eJb8QANu'

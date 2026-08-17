@@ -1,0 +1,18 @@
+filename = 'ukulib-1.7.1+1.21.5.jar'
+name = 'ukulib'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.5' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.7.1+1.21.5'
+
+[download]
+hash = '2ea95530a3c031c49b35c91260177d363e49199987f0282d3624a9b19ab6f2a728208734391c6d0b6ad6c4b260dc6967ee701377cda376f45047f30d2cd14d34'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/Y8uFrUil/versions/94Pv0WcZ/ukulib-1.7.1%2B1.21.5.jar'
+
+[update.modrinth]
+mod-id = 'Y8uFrUil'
+version = '94Pv0WcZ'

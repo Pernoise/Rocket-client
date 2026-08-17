@@ -1,0 +1,29 @@
+filename = 'capes-1.5.10+1.21.9-fabric.jar'
+name = 'Capes'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9', '1.21.10' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.5.10+1.21.9'
+
+[download]
+hash = '64ea3b436423849bcd44da2f6d3584c910c9182f66d3cd2917e378b265397f900eae251949237031b833c6abdec1e72527357d05ac07c171ef2fed7c3277253f'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/89Wsn8GD/versions/qagjZeWX/capes-1.5.10%2B1.21.9-fabric.jar'
+
+[update.modrinth]
+mod-id = '89Wsn8GD'
+version = 'qagjZeWX'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'mOgUt4GM'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Ha28R6CL'
+type = 'REQUIRED'

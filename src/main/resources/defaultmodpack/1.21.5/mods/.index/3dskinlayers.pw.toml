@@ -1,0 +1,21 @@
+filename = 'skinlayers3d-fabric-1.11.2-mc1.21.5.jar'
+name = '3d-Skin-Layers'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.5' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.11.2'
+
+[download]
+hash = 'f299f61aa630c48971c596c152e917219d7d70dd0ae3974c40308603dc5e158e5ed998a1e7bb9f33a1b9fac091b7a12847902c82b56c87a8586e796ba6866867'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/zV5r3pPn/versions/F7gPzIo2/skinlayers3d-fabric-1.11.2-mc1.21.5.jar'
+
+[update.modrinth]
+mod-id = 'zV5r3pPn'
+version = 'F7gPzIo2'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

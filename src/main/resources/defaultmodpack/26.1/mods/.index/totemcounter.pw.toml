@@ -1,0 +1,21 @@
+filename = 'totemcounter-fabric-1.12.1+mc26.1.jar'
+name = 'TotemCounter'
+side = ''
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '26.1', '26.1.1', '26.1.2' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.12.1+mc26.1-fabric'
+
+[download]
+hash = '94a6333d9affc7375166e34a7e5dd147e8b66995bea3676437e2a50f6a99ce062982ca0672cca829fe2106acfce9b120d6cc46fcad23e7e6a75227e1adb1a43e'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/T9R7YTnA/versions/o3pTGeZr/totemcounter-fabric-1.12.1%2Bmc26.1.jar'
+
+[update.modrinth]
+mod-id = 'T9R7YTnA'
+version = 'o3pTGeZr'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Y8uFrUil'
+type = 'REQUIRED'

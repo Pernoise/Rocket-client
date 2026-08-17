@@ -1,0 +1,29 @@
+filename = 'dynamic-fps-3.11.6+minecraft-1.21.9-fabric.jar'
+name = 'Dynamic FPS'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9', '1.21.10' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '3.11.6'
+
+[download]
+hash = 'fb656443d3befcc31cbf54c847b896fa1afe25a76d7b85cb586b5ee1ff7498a3192a6a5779b56ef4b64ebe931f5d29c7fe00c277de7633044e36e2aa9933f846'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/LQ3K71Q1/versions/UuDaIv5m/dynamic-fps-3.11.6%2Bminecraft-1.21.9-fabric.jar'
+
+[update.modrinth]
+mod-id = 'LQ3K71Q1'
+version = 'UuDaIv5m'
+
+[[x-prismlauncher-dependencies]]
+addonId = '9s6osm5g'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'mOgUt4GM'
+type = 'OPTIONAL'

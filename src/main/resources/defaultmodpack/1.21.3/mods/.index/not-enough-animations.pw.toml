@@ -1,0 +1,21 @@
+filename = 'notenoughanimations-fabric-1.12.4-mc1.21.3.jar'
+name = 'NotEnoughAnimations'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.3' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.12.4'
+
+[download]
+hash = 'd1e6b2e1029d261db871cc663f22f4f1b6a5a5df349cd967dac655b4f0953cd7f80a3af9b5e72fecd4a70f283acdbf342851df363d00acdaf3d340772a971ff9'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/MPCX6s5C/versions/oE5FAxCu/notenoughanimations-fabric-1.12.4-mc1.21.3.jar'
+
+[update.modrinth]
+mod-id = 'MPCX6s5C'
+version = 'oE5FAxCu'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

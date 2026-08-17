@@ -1,0 +1,18 @@
+filename = 'WalksyLib-0.9.96+1.21.2.jar'
+name = 'Walksy Lib'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.2', '1.21.3' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.9.96+1.21.2'
+
+[download]
+hash = '8e2ddcbc65d5377328dd10165a7956dc3cba73c0a997feb44a7e049ea3c5f80f2da604e2c15c1705ea63ca74f4e784714454c9807ab667e5e880db1edbab6db4'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/7P86n6Vg/versions/SjINqoqZ/WalksyLib-0.9.96%2B1.21.2.jar'
+
+[update.modrinth]
+mod-id = '7P86n6Vg'
+version = 'SjINqoqZ'

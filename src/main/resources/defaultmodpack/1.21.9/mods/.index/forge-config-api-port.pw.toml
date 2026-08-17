@@ -1,0 +1,21 @@
+filename = 'ForgeConfigAPIPort-v21.9.8+mc1.21.9-Fabric.jar'
+name = 'Forge Config API Port'
+side = ''
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '21.9.8'
+
+[download]
+hash = '95215123909307837f2f726e6dd027bea029e36c41515bb21bdcfcb5ab990b8c3d0cc23a1c7c83edd591ebce7e6d90f8305e045b485ce8c034b0850ded45c052'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/ohNO6lps/versions/3Zr2vML8/ForgeConfigAPIPort-v21.9.8%2Bmc1.21.9-Fabric.jar'
+
+[update.modrinth]
+mod-id = 'ohNO6lps'
+version = '3Zr2vML8'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

@@ -1,0 +1,18 @@
+filename = 'placeholder-api-2.8.1+1.21.10.jar'
+name = 'Placeholder API'
+side = ''
+x-prismlauncher-dependencies = []
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.9', '1.21.10', '1.21.11 Pre-Release 1', '1.21.11-pre1', '1.21.11' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '2.8.1+1.21.10'
+
+[download]
+hash = '92606640457931698f272e4e8866b5357767360e78a3eed8b3bd490e8a17bfeaefdc0bd444ac8ba4f51b7f9f1eb7f22337e034b409939db3601269d4b53ad22c'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/eXts2L7r/versions/T5pDJV1K/placeholder-api-2.8.1%2B1.21.10.jar'
+
+[update.modrinth]
+mod-id = 'eXts2L7r'
+version = 'T5pDJV1K'
