@@ -1,9 +1,23 @@
 package com.rocketclient;
 
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.text.*;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 public class SettingsPanel extends VBox {
 
@@ -27,38 +41,54 @@ public class SettingsPanel extends VBox {
         Button launchTab  = tabButton("Launch",  true);
         Button discordTab = tabButton("Discord", false);
         Button aboutTab   = tabButton("About",   false);
-        tabBar.getChildren().addAll(launchTab, discordTab, aboutTab);
+        Button devToolsTab = tabButton("DevTools", false);
+        tabBar.getChildren().addAll(launchTab, discordTab, aboutTab, devToolsTab);
 
         VBox launchPanel  = buildLaunchPanel();
         VBox discordPanel = buildDiscordPanel();
         VBox aboutPanel   = buildAboutPanel();
+        VBox devtoolsPanel = buildDevtoolsPanel();
 
         discordPanel.setVisible(false); discordPanel.setManaged(false);
         aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
+        devtoolsPanel.setVisible(false);
+        devtoolsPanel.setManaged(false);
 
-        StackPane content = new StackPane(launchPanel, discordPanel, aboutPanel);
+        StackPane content = new StackPane(launchPanel, discordPanel, aboutPanel, devtoolsPanel);
         VBox.setVgrow(content, Priority.ALWAYS);
 
         launchTab.setOnAction(e -> {
             launchPanel.setVisible(true);   launchPanel.setManaged(true);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
-            setActive(launchTab, discordTab, aboutTab);
+            setActive(launchTab, discordTab, aboutTab, devToolsTab);
         });
 
         discordTab.setOnAction(e -> {
             discordPanel.setVisible(true);  discordPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
-            setActive(discordTab, launchTab, aboutTab);
+            setActive(discordTab, launchTab, aboutTab, devToolsTab);
         });
 
         aboutTab.setOnAction(e -> {
             aboutPanel.setVisible(true);    aboutPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
-            setActive(aboutTab, launchTab, discordTab);
+            setActive(aboutTab, launchTab, discordTab, devToolsTab);
         });
+        devToolsTab.setOnAction(e -> {
+            aboutPanel.setVisible(false);
+            aboutPanel.setManaged(false);
+            launchPanel.setVisible(false);
+            launchPanel.setManaged(false);
+            discordPanel.setVisible(false);
+            discordPanel.setManaged(false);
+            devtoolsPanel.setVisible(true);
+            devtoolsPanel.setManaged(true);
+            setActive(devToolsTab, launchTab, discordTab, aboutTab);
+        });
+
 
         getChildren().addAll(title, tabBar, content);
     }
@@ -201,6 +231,36 @@ public class SettingsPanel extends VBox {
         return panel;
     }
 
+    void ChangeText(Button btn, String newText, boolean slower) {
+        Text dummyText = new Text(newText);
+        dummyText.setFont(Font.font("JetBrains Mono", 12));
+
+        Insets padding = btn.getPadding();
+        double horizontalPadding = (padding != null) ? (padding.getLeft() + padding.getRight()) : 32.0;
+        double safetyBuffer = 6.0;
+
+        double targetWidth = Math.ceil(dummyText.getLayoutBounds().getWidth() + horizontalPadding + safetyBuffer);
+
+        if (btn.getPrefWidth() <= 0) {
+            btn.setPrefWidth(btn.getWidth());
+        }
+
+        btn.setText(newText);
+
+        Timeline timeline = new Timeline();
+        KeyValue widthValue = new KeyValue(
+                btn.prefWidthProperty(),
+                targetWidth,
+                Interpolator.SPLINE(0.25, 0.1, 0.25, 1.0) // Smooth ease-in-out curve
+        );
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(300), widthValue);
+        if (slower) {
+            keyFrame = new KeyFrame(Duration.millis(1600), widthValue);
+        }
+
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.play();
+    }
     private VBox buildAboutPanel() {
         VBox panel = new VBox(16);
         panel.setPadding(new Insets(16, 0, 0, 0));
@@ -215,17 +275,14 @@ public class SettingsPanel extends VBox {
 
         panel.getChildren().add(sectionLabel("Info"));
         panel.getChildren().addAll(version, desc);
-
         panel.getChildren().add(sectionLabel("Links"));
         panel.getChildren().add(linkLabel("Discord", "https://discord.com/invite/urHfdFdsbh"));
         panel.getChildren().add(linkLabel("Website", "https://rocketclient.rocketclient.abrdns.com"));
-
         panel.getChildren().add(sectionLabel("Updates"));
         Button checkUpdateBtn = new Button("Check for Updates");
         checkUpdateBtn.setStyle(secondaryBtnStyle());
         Label updateStatus = new Label();
         updateStatus.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
-
         checkUpdateBtn.setOnAction(e -> {
             checkUpdateBtn.setDisable(true);
             checkUpdateBtn.setText("Checking...");
@@ -271,6 +328,68 @@ public class SettingsPanel extends VBox {
         panel.getChildren().add(avatarCreditRow);
 
         return panel;
+    }
+
+    private VBox buildDevtoolsPanel() {
+
+        VBox panel = new VBox(10);
+        Button clearLocalDataBtn = new Button("Clear RocketClient data");
+        clearLocalDataBtn.setStyle(secondaryBtnStyle() + " -fx-background-color: #2E0000;");
+        //System.out.println("ironically enough, the devtools panel is in development.");
+        clearLocalDataBtn.setOnAction(e -> {
+
+            if (clearLocalDataBtn.getText().equals("Clear RocketClient data")) {
+                ChangeText(clearLocalDataBtn, "Are you sure?", false);
+                return;
+            }
+            if (clearLocalDataBtn.getText().equals("Are you sure?")) {
+                ChangeText(clearLocalDataBtn, "Are you really sure?", false);
+                return;
+            }
+            if (clearLocalDataBtn.getText().equals("Are you really sure?")) {
+                ChangeText(clearLocalDataBtn, "Are you really actually sure?", false);
+                return;
+            }
+            if (clearLocalDataBtn.getText().equals("Are you really actually sure?")) {
+                ChangeText(clearLocalDataBtn, "Are you really actually extremely sure?", false);
+                return;
+            }
+            if (clearLocalDataBtn.getText().equals("Are you really actually extremely sure?")) {
+                ChangeText(clearLocalDataBtn, "One last click for good luck?", false);
+                return;
+            }
+            Path path = Paths.get(System.getProperty("user.home"), ".rocketclient");
+
+            if (Files.exists(path) && clearLocalDataBtn.getText().equals("One last click for good luck?")) {
+                try {
+                    // Walk the file tree in reverse (deleting files/subfolders before the parent folder)
+                    try (Stream<Path> walk = Files.walk(path)) {
+                        walk.sorted(Comparator.reverseOrder())
+                                .forEach(p -> {
+                                    try {
+                                        Files.delete(p);
+                                    } catch (IOException ex) {
+                                        throw new UncheckedIOException(ex);
+                                    }
+                                });
+                    }
+                    ChangeText(clearLocalDataBtn, "Nuked data folder.", false);
+                    return;
+                } catch (IOException | UncheckedIOException ex) {
+                    System.out.println("File deletion failed! " + ex.getMessage());
+                    ChangeText(clearLocalDataBtn, "Failed to nuke the data folder.", false);
+                    return;
+                }
+            }
+            if (clearLocalDataBtn.getText().equals("Failed to nuke the data folder.") || clearLocalDataBtn.getText().equals("Nuked data folder.")) {
+                ChangeText(clearLocalDataBtn, "Clear RocketClient data.", true);
+            }
+
+
+        });
+        panel.getChildren().addAll(clearLocalDataBtn);
+        return panel;
+
     }
 
     private Label sectionLabel(String text) {
@@ -376,4 +495,5 @@ public class SettingsPanel extends VBox {
                "-fx-border-color: #222222; -fx-border-radius: 6; -fx-background-radius: 6; " +
                "-fx-cursor: hand; -fx-padding: 8 16;";
     }
+
 }
