@@ -21,29 +21,33 @@ jobs:
           assets=$(gh release view "$TAG_NAME" \
             --repo "${{ github.repository }}" \
             --json assets \
-            --jq '.assets')
+            --jq '.assets[].name')
 
-          windows_url=$(echo "$assets" | jq -r \
-            '.[] | select(.name | endswith("-Setup.exe")) | .url' | head -n 1)
+          windows_asset=$(echo "$assets" | grep -E -- '-Setup\.exe$' | head -n 1)
+          linux_asset=$(echo "$assets" | grep -E -- '-x86_64\.AppImage$' | head -n 1)
 
-          linux_url=$(echo "$assets" | jq -r \
-            '.[] | select(.name | endswith("-x86_64.AppImage")) | .url' | head -n 1)
-
-          if [ -z "$windows_url" ] || [ "$windows_url" = "null" ]; then
+          if [ -z "$windows_asset" ]; then
             echo "Windows release asset not found."
             exit 1
           fi
 
-          if [ -z "$linux_url" ] || [ "$linux_url" = "null" ]; then
+          if [ -z "$linux_asset" ]; then
             echo "Linux release asset not found."
             exit 1
           fi
+
+          windows_url="https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/${windows_asset}"
+          linux_url="https://github.com/${{ github.repository }}/releases/download/${TAG_NAME}/${linux_asset}"
 
           version="${TAG_NAME#v}"
 
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "windows_url=$windows_url" >> "$GITHUB_OUTPUT"
           echo "linux_url=$linux_url" >> "$GITHUB_OUTPUT"
+
+          echo "Version: $version"
+          echo "Windows: $windows_url"
+          echo "Linux: $linux_url"
 
       - name: Install Wrangler
         run: npm install -g wrangler@4.123.0
