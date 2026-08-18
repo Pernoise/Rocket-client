@@ -61,6 +61,8 @@ public class SettingsPanel extends VBox {
             launchPanel.setVisible(true);   launchPanel.setManaged(true);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
+            devtoolsPanel.setVisible(false);
+            devtoolsPanel.setManaged(false);
             setActive(launchTab, discordTab, aboutTab, devToolsTab);
         });
 
@@ -68,6 +70,8 @@ public class SettingsPanel extends VBox {
             discordPanel.setVisible(true);  discordPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
             aboutPanel.setVisible(false);   aboutPanel.setManaged(false);
+            devtoolsPanel.setVisible(false);
+            devtoolsPanel.setManaged(false);
             setActive(discordTab, launchTab, aboutTab, devToolsTab);
         });
 
@@ -75,6 +79,8 @@ public class SettingsPanel extends VBox {
             aboutPanel.setVisible(true);    aboutPanel.setManaged(true);
             launchPanel.setVisible(false);  launchPanel.setManaged(false);
             discordPanel.setVisible(false); discordPanel.setManaged(false);
+            devtoolsPanel.setVisible(false);
+            devtoolsPanel.setManaged(false);
             setActive(aboutTab, launchTab, discordTab, devToolsTab);
         });
         devToolsTab.setOnAction(e -> {
