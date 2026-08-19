@@ -110,7 +110,7 @@ Rocket Client is currently in **Beta** and is under active development.
 - [ ] Mod management
 - [x] Instance management
 - [x] Built-in log viewer
-- [ ] Additional quality-of-life improvements
+- [x] Additional quality-of-life improvements
 
 ---
 
