@@ -104,7 +104,7 @@ Rocket Client is currently in **Beta** and is under active development.
 
 ## Planned
 
-- [ ] Automatic launcher updates
+- [x] Automatic launcher updates
 - [x] Fabric installation
 - [x] Forge installation
 - [ ] Mod management
