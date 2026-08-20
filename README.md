@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="src/main/resources/images/icon.png" width="128" alt="Rocket Client Logo">
+<img src="src/main/resources/images/icon.png" width="128" alt="Rogue Client Logo">
 
-# Rocket Client
+# Rogue Client
 
 A modern, lightweight Minecraft launcher built with JavaFX.
 
@@ -11,7 +11,7 @@ A modern, lightweight Minecraft launcher built with JavaFX.
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-success)
 ![Status](https://img.shields.io/badge/Status-Beta-orange)
 
-Rocket Client is a modern Minecraft launcher focused on performance, simplicity, and a clean user experience.
+Rogue Client is a modern Minecraft launcher focused on performance, simplicity, and a clean user experience.
 
 </div>
 
@@ -19,11 +19,11 @@ Rocket Client is a modern Minecraft launcher focused on performance, simplicity,
 
 ## About
 
-Rocket Client is an independently developed Minecraft launcher created by **Pernoise**.
+Rogue Client is an independently developed Minecraft launcher created by **Pernoise**.
 
-Built entirely with **Java** and **JavaFX**, Rocket Client is designed to provide a clean, responsive, and lightweight experience without sacrificing modern functionality. The project supports Microsoft and Ely.by authentication, Discord Rich Presence, multiple Minecraft versions, and continues to evolve with new features and improvements.
+Built entirely with **Java** and **JavaFX**, Rogue Client is designed to provide a clean, responsive, and lightweight experience without sacrificing modern functionality. The project supports Microsoft and Ely.by authentication, Discord Rich Presence, multiple Minecraft versions, and continues to evolve with new features and improvements.
 
-Rocket Client is currently in **Beta** and is under active development.
+Rogue Client is currently in **Beta** and is under active development.
 
 ---
 
@@ -116,7 +116,7 @@ Rocket Client is currently in **Beta** and is under active development.
 
 # Repository Notice
 
-Rocket Client's source code may be publicly accessible for transparency, verification, educational reference, or public inspection.
+Rogue Client's source code may be publicly accessible for transparency, verification, educational reference, or public inspection.
 
 Public availability **does not** grant permission to:
 
@@ -126,7 +126,7 @@ Public availability **does not** grant permission to:
 - Fork the project for development
 - Reuse code, assets, or resources
 - Create derivative works
-- Reupload any part of Rocket Client
+- Reupload any part of Rogue Client
 
 Please refer to the **LICENSE** file for the complete terms and restrictions.
 
@@ -136,7 +136,7 @@ Please refer to the **LICENSE** file for the complete terms and restrictions.
 
 If you encounter a bug or unexpected behavior, please open a ticket in the discord including:
 
-- Rocket Client version
+- Rogue Client version
 - Operating system
 - Steps to reproduce
 - Screenshots (if applicable)
@@ -148,7 +148,7 @@ Feature suggestions are also welcome.
 
 # Frequently Asked Questions
 
-### Is Rocket Client open source?
+### Is Rogue Client open source?
 
 No.
 
@@ -170,17 +170,17 @@ The repository may be publicly viewable for transparency, but the project is **n
 
 ---
 
-### Is Rocket Client finished?
+### Is Rogue Client finished?
 
 No.
 
-Rocket Client is currently in **Beta**, and new features, improvements, and fixes are actively being developed.
+Rogue Client is currently in **Beta**, and new features, improvements, and fixes are actively being developed.
 
 ---
 
 # License
 
-Rocket Client is distributed under the **Rocket Client License**.
+Rogue Client is distributed under the **Rogue Client License**.
 
 All rights are reserved.
 
@@ -190,13 +190,13 @@ Please read the `LICENSE` file before downloading, viewing, using, or interactin
 
 <div align="center">
 
-### Rocket Client
+### Rogue Client
 
 Developed by **Pernoise**
 
 © 2026 Pernoise. All rights reserved.
 
-If you enjoy Rocket Client, consider leaving the repository a ⭐.
+If you enjoy Rogue Client, consider leaving the repository a ⭐.
 
 </div>
 Join the community:

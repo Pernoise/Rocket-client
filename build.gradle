@@ -4,7 +4,7 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-group = 'com.rocketclient'
+group = 'com.rogueclient'
 version = '0.1.0'
 
 repositories {
@@ -21,7 +21,7 @@ javafx {
 }
 
 application {
-    mainClass = 'com.rocketclient.Main'
+    mainClass = 'com.rogueclient.Main'
 }
 
 dependencies {
@@ -31,7 +31,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-            'Main-Class': 'com.rocketclient.Main',
+            'Main-Class': 'com.rogueclient.Main',
             'Class-Path': configurations.runtimeClasspath.files.collect { it.name }.join(' ')
         )
     }
@@ -48,7 +48,7 @@ build.dependsOn copyDeps
 task fatJar(type: Jar) {
     manifest {
         attributes(
-            'Main-Class': 'com.rocketclient.Main'
+            'Main-Class': 'com.rogueclient.Main'
         )
     }
     archiveClassifier = 'all'
