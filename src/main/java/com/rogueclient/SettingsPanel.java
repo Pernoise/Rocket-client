@@ -1,14 +1,21 @@
 package com.rogueclient;
 
+import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.text.*;
 import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -17,7 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class SettingsPanel extends VBox {
 
@@ -336,37 +346,83 @@ public class SettingsPanel extends VBox {
         return panel;
     }
 
+    private static final String NUKE_IDLE_TEXT = "Clear RogueClient data";
+
     private VBox buildDevtoolsPanel() {
 
-        VBox panel = new VBox(10);
-        Button clearLocalDataBtn = new Button("Clear RogueClient data");
+        VBox panel = new VBox(20);
+        panel.setPadding(new Insets(16, 0, 0, 0));
+
+        // ---- Instance backup ----
+        panel.getChildren().add(sectionLabel("Instance Backup"));
+
+        Label backupDesc = new Label("Compress every installed instance into a single zip archive.");
+        backupDesc.setWrapText(true);
+        backupDesc.setStyle("-fx-text-fill: #7a7a7a; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        panel.getChildren().add(backupDesc);
+
+        HBox backupRow = new HBox(12);
+        backupRow.setAlignment(Pos.CENTER_LEFT);
+
+        Button backupBtn = new Button("Backup Instances");
+        backupBtn.setStyle(secondaryBtnStyle());
+
+        Label backupStatus = statusLabel();
+
+        backupBtn.setOnAction(e -> startInstanceBackup(backupBtn, backupStatus));
+
+        backupRow.getChildren().addAll(backupBtn, backupStatus);
+        panel.getChildren().add(backupRow);
+
+        // ---- Danger zone ----
+        Region divider = new Region();
+        divider.setPrefHeight(1);
+        divider.setStyle("-fx-background-color: #1a1a1a;");
+        panel.getChildren().add(divider);
+
+        panel.getChildren().add(sectionLabel("Danger Zone"));
+
+        Label nukeDesc = new Label("Permanently deletes your entire RogueClient data folder, including instances, accounts and settings.");
+        nukeDesc.setWrapText(true);
+        nukeDesc.setStyle("-fx-text-fill: #7a7a7a; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        panel.getChildren().add(nukeDesc);
+
+        HBox nukeRow = new HBox(12);
+        nukeRow.setAlignment(Pos.CENTER_LEFT);
+
+        Button clearLocalDataBtn = new Button(NUKE_IDLE_TEXT);
         clearLocalDataBtn.setStyle(secondaryBtnStyle() + " -fx-background-color: #2E0000;");
-        //System.out.println("ironically enough, the devtools panel is in development.");
+
+        Label nukeStatus = statusLabel();
+
         clearLocalDataBtn.setOnAction(e -> {
 
-            if (clearLocalDataBtn.getText().equals("Clear RogueClient data")) {
-                ChangeText(clearLocalDataBtn, "Are you sure?", false);
-                return;
+            switch (clearLocalDataBtn.getText()) {
+                case NUKE_IDLE_TEXT:
+                    ChangeText(clearLocalDataBtn, "Are you sure?", false);
+                    return;
+                case "Are you sure?":
+                    ChangeText(clearLocalDataBtn, "Are you really sure?", false);
+                    return;
+                case "Are you really sure?":
+                    ChangeText(clearLocalDataBtn, "Are you really actually sure?", false);
+                    return;
+                case "Are you really actually sure?":
+                    ChangeText(clearLocalDataBtn, "Are you really actually extremely sure?", false);
+                    return;
+                case "Are you really actually extremely sure?":
+                    ChangeText(clearLocalDataBtn, "One last click for good luck?", false);
+                    return;
+                case "One last click for good luck?":
+                    break;
+                default:
+                    ChangeText(clearLocalDataBtn, NUKE_IDLE_TEXT, false);
+                    return;
             }
-            if (clearLocalDataBtn.getText().equals("Are you sure?")) {
-                ChangeText(clearLocalDataBtn, "Are you really sure?", false);
-                return;
-            }
-            if (clearLocalDataBtn.getText().equals("Are you really sure?")) {
-                ChangeText(clearLocalDataBtn, "Are you really actually sure?", false);
-                return;
-            }
-            if (clearLocalDataBtn.getText().equals("Are you really actually sure?")) {
-                ChangeText(clearLocalDataBtn, "Are you really actually extremely sure?", false);
-                return;
-            }
-            if (clearLocalDataBtn.getText().equals("Are you really actually extremely sure?")) {
-                ChangeText(clearLocalDataBtn, "One last click for good luck?", false);
-                return;
-            }
+
             Path path = Paths.get(System.getProperty("user.home"), ".rogueclient");
 
-            if (Files.exists(path) && clearLocalDataBtn.getText().equals("One last click for good luck?")) {
+            if (Files.exists(path)) {
                 try {
                     // Walk the file tree in reverse (deleting files/subfolders before the parent folder)
                     try (Stream<Path> walk = Files.walk(path)) {
@@ -379,23 +435,207 @@ public class SettingsPanel extends VBox {
                                     }
                                 });
                     }
-                    ChangeText(clearLocalDataBtn, "Nuked data folder.", false);
-                    return;
+                    showStatus(nukeStatus, "Success", true);
                 } catch (IOException | UncheckedIOException ex) {
                     System.out.println("File deletion failed! " + ex.getMessage());
-                    ChangeText(clearLocalDataBtn, "Failed to nuke the data folder.", false);
-                    return;
+                    showStatus(nukeStatus, "Failed", false);
                 }
-            }
-            if (clearLocalDataBtn.getText().equals("Failed to nuke the data folder.") || clearLocalDataBtn.getText().equals("Nuked data folder.")) {
-                ChangeText(clearLocalDataBtn, "Clear RogueClient data.", true);
+            } else {
+                showStatus(nukeStatus, "Nothing to clear", false);
             }
 
-
+            ChangeText(clearLocalDataBtn, NUKE_IDLE_TEXT, false);
         });
-        panel.getChildren().addAll(clearLocalDataBtn);
-        return panel;
 
+        nukeRow.getChildren().addAll(clearLocalDataBtn, nukeStatus);
+        panel.getChildren().add(nukeRow);
+
+        return panel;
+    }
+
+    /** Small pill of text used to report the outcome of a devtools action next to its button. Starts invisible. */
+    private Label statusLabel() {
+        Label label = new Label();
+        label.setOpacity(0);
+        label.setStyle("-fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold;");
+        return label;
+    }
+
+    /** Shows a status message next to a devtools button, then fades it back out after a couple seconds. */
+    private void showStatus(Label label, String text, boolean success) {
+        label.setText(text);
+        label.setStyle("-fx-text-fill: " + (success ? "#3ddc84" : "#e0605a") +
+                "; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold;");
+        label.setOpacity(1);
+
+        FadeTransition fade = new FadeTransition(Duration.seconds(0.5), label);
+        fade.setDelay(Duration.seconds(2.5));
+        fade.setFromValue(1);
+        fade.setToValue(0);
+        fade.play();
+    }
+
+    /**
+     * Zips every instance under ~/.rogueclient/instances into a single archive, shown in a small
+     * modal progress window that the user is warned not to close. The window has a cancel button
+     * that aborts the compression job and deletes whatever partial archive had been written so far.
+     * Once compression finishes successfully, the user is asked where the finished zip should go.
+     */
+    private void startInstanceBackup(Button backupBtn, Label statusLabel) {
+        Path instancesDir = Paths.get(System.getProperty("user.home"), ".rogueclient", "instances");
+
+        if (!Files.exists(instancesDir)) {
+            showStatus(statusLabel, "No instances found", false);
+            return;
+        }
+
+        final Path tempZip;
+        try {
+            tempZip = Files.createTempFile("rogueclient-backup-", ".zip");
+        } catch (IOException ex) {
+            showStatus(statusLabel, "Couldn't start backup", false);
+            return;
+        }
+
+        // --- progress window ---
+        Stage progressStage = new Stage();
+        progressStage.initStyle(StageStyle.UNDECORATED);
+        progressStage.initModality(Modality.APPLICATION_MODAL);
+        progressStage.setResizable(false);
+        progressStage.setTitle("Backing up instances");
+
+        VBox root = new VBox(14);
+        root.setStyle("-fx-background-color: #0f0f0f; -fx-border-color: #1a1a1a; -fx-border-width: 1;");
+        root.setPadding(new Insets(20));
+        root.setPrefWidth(360);
+
+        Label title = new Label("Backing up instances");
+        title.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 13; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold;");
+
+        Label fileLabel = new Label("Preparing...");
+        fileLabel.setStyle("-fx-text-fill: #7a7a7a; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
+        fileLabel.setWrapText(true);
+
+        ProgressBar progressBar = new ProgressBar(0);
+        progressBar.setMaxWidth(Double.MAX_VALUE);
+        progressBar.setStyle("-fx-accent: #ffffff;");
+
+        Label percentLabel = new Label("0%");
+        percentLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+
+        Label warningLabel = new Label("Do not close this window while the backup is running.");
+        warningLabel.setWrapText(true);
+        warningLabel.setStyle("-fx-text-fill: #d9a441; -fx-font-size: 10; -fx-font-family: 'JetBrains Mono';");
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setStyle(secondaryBtnStyle() + " -fx-background-color: #2E0000;");
+
+        HBox btnRow = new HBox(cancelBtn);
+        btnRow.setAlignment(Pos.CENTER_RIGHT);
+
+        root.getChildren().addAll(title, fileLabel, progressBar, percentLabel, warningLabel, btnRow);
+        progressStage.setScene(new Scene(root));
+
+        // Undecorated + consuming the close request means the only way out is the Cancel button.
+        progressStage.setOnCloseRequest(javafx.event.Event::consume);
+
+        // --- background zip task ---
+        Task<Void> backupTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                List<Path> files;
+                try (Stream<Path> walk = Files.walk(instancesDir)) {
+                    files = walk.filter(Files::isRegularFile).toList();
+                }
+
+                long total = Math.max(files.size(), 1);
+                long done = 0;
+
+                try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(tempZip))) {
+                    for (Path file : files) {
+                        if (isCancelled()) {
+                            break;
+                        }
+                        String entryName = instancesDir.relativize(file).toString().replace('\\', '/');
+                        updateMessage(entryName);
+                        zos.putNextEntry(new ZipEntry(entryName));
+                        Files.copy(file, zos);
+                        zos.closeEntry();
+                        done++;
+                        updateProgress(done, total);
+                    }
+                }
+
+                if (isCancelled()) {
+                    Files.deleteIfExists(tempZip);
+                }
+                return null;
+            }
+        };
+
+        progressBar.progressProperty().bind(backupTask.progressProperty());
+        fileLabel.textProperty().bind(backupTask.messageProperty());
+        backupTask.progressProperty().addListener((obs, oldVal, newVal) -> {
+            int pct = (int) Math.round(Math.max(newVal.doubleValue(), 0) * 100);
+            percentLabel.setText(pct + "%");
+        });
+
+        cancelBtn.setOnAction(ev -> {
+            cancelBtn.setDisable(true);
+            warningLabel.setText("Cancelling...");
+            backupTask.cancel(true);
+        });
+
+        backupTask.setOnSucceeded(ev -> {
+            progressStage.close();
+            promptBackupDestination(tempZip, statusLabel);
+        });
+
+        backupTask.setOnCancelled(ev -> {
+            progressStage.close();
+            showStatus(statusLabel, "Backup cancelled", false);
+        });
+
+        backupTask.setOnFailed(ev -> {
+            progressStage.close();
+            try {
+                Files.deleteIfExists(tempZip);
+            } catch (IOException ignored) {
+            }
+            showStatus(statusLabel, "Backup failed", false);
+        });
+
+        Thread worker = new Thread(backupTask, "instance-backup");
+        worker.setDaemon(true);
+        worker.start();
+
+        progressStage.show();
+    }
+
+    /** Asks the user where the finished backup zip should be moved to once compression completes. */
+    private void promptBackupDestination(Path tempZip, Label statusLabel) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Choose a folder to save the backup in");
+
+        java.io.File destDir = chooser.showDialog(null);
+        if (destDir == null) {
+            try {
+                Files.deleteIfExists(tempZip);
+            } catch (IOException ignored) {
+            }
+            showStatus(statusLabel, "Backup discarded", false);
+            return;
+        }
+
+        try {
+            String filename = "rogueclient-instances-" + System.currentTimeMillis() + ".zip";
+            Path destination = destDir.toPath().resolve(filename);
+            Files.move(tempZip, destination);
+            showStatus(statusLabel, "Success", true);
+        } catch (IOException ex) {
+            System.out.println("Failed to move backup archive: " + ex.getMessage());
+            showStatus(statusLabel, "Failed to save backup", false);
+        }
     }
 
     private Label sectionLabel(String text) {

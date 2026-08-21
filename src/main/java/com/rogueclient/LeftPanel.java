@@ -121,8 +121,8 @@ public class LeftPanel extends VBox {
         try {
             Image img = new Image(getClass().getClassLoader().getResourceAsStream(resourcePath));
             ImageView iv = new ImageView(img);
-            iv.setFitWidth(isLogo ? 22 : 20);
-            iv.setFitHeight(isLogo ? 22 : 20);
+            iv.setFitWidth(isLogo ? 32 : 20);
+            iv.setFitHeight(isLogo ? 32 : 20);
             iv.setPreserveRatio(true);
             box.getChildren().add(iv);
         } catch (Exception e) {
