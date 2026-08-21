@@ -1,0 +1,22 @@
+--input
+build/libs
+--main-jar
+ RocketClient-0.1.0.jar
+--main-class
+ com.rocketclient.Main
+--type
+ app-image
+--name
+ RocketClient
+--app-version
+ 0.9.0
+--module-path
+ /home/farlaxfard/javafx-jmods-21
+--add-modules
+ javafx.controls,javafx.fxml,javafx.swing,javafx.web,jdk.httpserver,jdk.crypto.ec,jdk.crypto.cryptoki,java.management,jdk.management
+--java-options
+ "-Dhttps.protocols=TLSv1.2,TLSv1.3"
+--icon
+ src/main/resources/icons/rocket-launch.png
+--dest
+ build/app-image
