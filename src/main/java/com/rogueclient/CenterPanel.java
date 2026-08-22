@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -64,10 +65,13 @@ public class CenterPanel extends VBox {
         setSpacing(6);
 
         Label name = new Label("Rogue Client");
-        name.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 28; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
-
-        Label tagline = new Label("A Minecraft performance-focused client - BETA");
-        tagline.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
+        Font customFont = Font.loadFont(getClass().getResourceAsStream("/fonts/gondens-demo/Gondens DEMO.otf"), 64);
+        if (customFont != null) {
+            name.setFont(customFont);
+            name.setStyle("-fx-text-fill: #ffffff; -fx-opacity: 0.88;");
+        } else {
+            name.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 64; -fx-font-family: 'JetBrains Mono'; -fx-font-weight: bold; -fx-opacity: 0.88;");
+        }
 
         Label quote = new Label(loadRandomQuote());
         quote.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono'; -fx-font-style: italic; -fx-font-weight: bold;");
@@ -135,7 +139,7 @@ public class CenterPanel extends VBox {
 
         refreshRecentRow();
 
-        getChildren().addAll(name, tagline, quote, topSpacer, recentRow, bottomSpacer, selectBtn, playRow, scrollPane);
+        getChildren().addAll(name, quote, topSpacer, recentRow, bottomSpacer, selectBtn, playRow, scrollPane);
     }
 
     private void toggleDropdown() {
@@ -398,7 +402,6 @@ public class CenterPanel extends VBox {
             );
             if (fromFile != null) quotes.addAll(fromFile);
         } catch (Exception e) {
-            // quotes.json missing or unreadable, fall back to the hardcoded set below
         }
         quotes.addAll(Arrays.asList(EXTRA_QUOTES));
 
