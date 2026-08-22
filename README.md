@@ -9,7 +9,7 @@ A modern, lightweight Minecraft launcher built with JavaFX.
 ![Java](https://img.shields.io/badge/Java-22-red)
 ![JavaFX](https://img.shields.io/badge/JavaFX-22-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-success)
-![Status](https://img.shields.io/badge/Status-Beta-orange)
+![Status](https://img.shields.io/badge/Status-Release-brightgreen)
 
 Rogue Client is a modern Minecraft launcher focused on performance, simplicity, and a clean user experience.
 
@@ -22,8 +22,6 @@ Rogue Client is a modern Minecraft launcher focused on performance, simplicity, 
 Rogue Client is an independently developed Minecraft launcher created by **Pernoise**.
 
 Built entirely with **Java** and **JavaFX**, Rogue Client is designed to provide a clean, responsive, and lightweight experience without sacrificing modern functionality. The project supports Microsoft and Ely.by authentication, Discord Rich Presence, multiple Minecraft versions, and continues to evolve with new features and improvements.
-
-Rogue Client is currently in **Beta** and is under active development.
 
 ---
 
@@ -87,11 +85,6 @@ Rogue Client is currently in **Beta** and is under active development.
 - [x] Discord Rich Presence
 - [x] News panel
 - [x] Minecraft version selection
-
----
-
-## In Development
-
 - [x] Improved Microsoft authentication
 - [x] Faster launcher startup
 - [x] Automatic Java installation
@@ -99,18 +92,18 @@ Rogue Client is currently in **Beta** and is under active development.
 - [x] Better launcher settings
 - [x] Crash reporting
 - [x] General performance improvements
+- [x] Automatic launcher updates
+- [x] Fabric installation
+- [x] Forge installation
+- [x] Instance management
+- [x] Built-in log viewer
+- [x] Additional quality-of-life improvements
 
 ---
 
 ## Planned
 
-- [x] Automatic launcher updates
-- [x] Fabric installation
-- [x] Forge installation
 - [ ] Mod management
-- [x] Instance management
-- [x] Built-in log viewer
-- [x] Additional quality-of-life improvements
 
 ---
 
@@ -128,7 +121,7 @@ Public availability **does not** grant permission to:
 - Create derivative works
 - Reupload any part of Rogue Client
 
-Please refer to the **LICENSE** file for the complete terms and restrictions.
+Please refer to the **LICENSE** and **TERMS_OF_SERVICE.md** files for the complete terms and restrictions.
 
 ---
 
@@ -172,9 +165,7 @@ The repository may be publicly viewable for transparency, but the project is **n
 
 ### Is Rogue Client finished?
 
-No.
-
-Rogue Client is currently in **Beta**, and new features, improvements, and fixes are actively being developed.
+Rogue Client has graduated out of beta and is now in full release. Development continues, with new features and improvements planned for future updates.
 
 ---
 
@@ -184,7 +175,7 @@ Rogue Client is distributed under the **Rogue Client License**.
 
 All rights are reserved.
 
-Please read the `LICENSE` file before downloading, viewing, using, or interacting with any part of this project.
+Please read the `LICENSE` and `TERMS_OF_SERVICE.md` files before downloading, viewing, using, or interacting with any part of this project.
 
 ---
 

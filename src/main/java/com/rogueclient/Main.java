@@ -25,7 +25,6 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Rogue Client");
-        stage.setTitle("Rogue Client");
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Regular.ttf"), 12);
         Font.loadFont(getClass().getClassLoader().getResourceAsStream("fonts/JetBrainsMono-Bold.ttf"), 12);
 
@@ -37,7 +36,7 @@ public class Main extends Application {
         SplashScreen splash = new SplashScreen(() -> {
             DiscordRPC.start(settingsManager);
 
-            Label titleLabel = new Label("Rogue Client  BETA");
+            Label titleLabel = new Label("Rogue Client");
             titleLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 11; -fx-font-family: 'JetBrains Mono';");
 
             Button minimizeBtn = new Button("-");
@@ -215,6 +214,16 @@ public class Main extends Application {
             if (FirstLaunchDialog.isFirstLaunch()) {
                 Platform.runLater(() -> FirstLaunchDialog.show());
             }
+
+            // Background check so a slow/dead network never delays the launcher opening.
+            Thread updateCheck = new Thread(() -> {
+                UpdateManager.UpdateInfo info = UpdateManager.checkForUpdate();
+                if (info != null) {
+                    Platform.runLater(() -> UpdateAvailableDialog.show(info));
+                }
+            });
+            updateCheck.setDaemon(true);
+            updateCheck.start();
         });
 
         splash.show();
@@ -232,7 +241,16 @@ public class Main extends Application {
         return "-fx-background-color: #3a0000; -fx-text-fill: #ff4444; -fx-font-family: 'JetBrains Mono'; -fx-font-size: 12; -fx-cursor: hand; -fx-padding: 2 10; -fx-border-color: transparent;";
     }
 
-    public static void main(String[] args) { try { java.nio.file.Path logDir = java.nio.file.Paths.get(System.getProperty("user.home"), ".rogueclient", "logs"); java.nio.file.Files.createDirectories(logDir); java.io.PrintStream logStream = new java.io.PrintStream(new java.io.FileOutputStream(logDir.resolve("launcher-latest.log").toFile(), false)); System.setOut(logStream); System.setErr(logStream); } catch (Exception e) {} 
+    public static void main(String[] args) {
+        try {
+            java.nio.file.Path logDir = java.nio.file.Paths.get(System.getProperty("user.home"), ".rogueclient", "logs");
+            java.nio.file.Files.createDirectories(logDir);
+            java.io.PrintStream logStream = new java.io.PrintStream(new java.io.FileOutputStream(logDir.resolve("launcher-latest.log").toFile(), false));
+            System.setOut(logStream);
+            System.setErr(logStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         launch(args);
     }
 }
