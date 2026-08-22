@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.openjfx.javafxplugin' version '1.0.0'
 }
 
 group = 'com.rogueclient'
@@ -70,3 +70,18 @@ task fatJar(type: Jar) {
     }
     with jar
 }
+
+// Bakes the single project version (above) into a resource file every build, so
+// AppVersion.java has one real source of truth instead of every window hardcoding
+// its own version string.
+task generateVersionResource {
+    def outputDir = file("$buildDir/generated/resources")
+    def outputFile = file("$outputDir/version.properties")
+    outputs.file(outputFile)
+    doLast {
+        outputDir.mkdirs()
+        outputFile.text = "version=${project.version}\n"
+    }
+}
+sourceSets.main.resources.srcDir "$buildDir/generated/resources"
+processResources.dependsOn generateVersionResource
